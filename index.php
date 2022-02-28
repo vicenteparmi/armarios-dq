@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="index.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth-compat.js"></script>
+    <script src="firebase.js"></script>
 </head>
 
 <body>
@@ -16,7 +19,6 @@
 
     <div class="info-pannel-container">
         <div class="info-pannel">
-            <span>Seu armário</span>
             <div id="locker">NI</div>
             <h3 style="margin: 0;">Vicente K Parmigiani</h3>
             <p>Status: Regular
@@ -67,9 +69,6 @@
             </table>
         </div>
     </div>
-
-
-    <script type="module" src="firebase.js"></script>
 </body>
 
 </html>

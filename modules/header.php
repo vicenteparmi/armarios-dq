@@ -13,6 +13,7 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
         position: fixed;
         top: 0;
         left: 0;
+        justify-content: space-between;
     }
 
     .links {
@@ -44,6 +45,13 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
         display: inline-flex;
         margin-left: 5vw;
     }
+
+    #loginStatus {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 5vw;
+        cursor: pointer;
+    }
 </style>
 <nav>
     <h2 id='pageTitle'>Armários do<br>Departamento de Química</h2>
@@ -58,4 +66,8 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
                 echo 'class="active"';
             } ?>><a href="help.php">Como reservar</a></li>
     </ul>
+    <!-- Login with firebase -->
+    <span id="loginStatus"><u>Entrar ou Registrar</u></span>
 </nav>
+
+<script src="modules/header.js"></script>
