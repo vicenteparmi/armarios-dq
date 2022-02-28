@@ -1,0 +1,25 @@
+:root {
+    --primary: darkorange;
+}
+
+body {
+    margin: 100px 5vw 48px 5vw;
+    font-family: 'Muli', 'Open Sans', sans-serif;
+}
+
+button {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px;
+    border-radius: 42px;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+}
+
+button:hover {
+    background-color: #fff;
+    color: var(--primary);
+    border: solid 1px var(--primary);
+}
