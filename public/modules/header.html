@@ -1,6 +1,3 @@
-<?php
-$activePage = basename($_SERVER['PHP_SELF'], ".php");
-?>
 <style>
     nav {
         background-color: #fff;
@@ -56,7 +53,11 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
 <nav>
     <h2 id='pageTitle'>Armários do<br>Departamento de Química</h2>
     <ul class="links">
-        <li <?php if ($activePage == "index") {
+        <li class="active"><a href="index.html">Início</a></li>
+        <li><a href="meuscontratos.html">Gerenciar Armários</a></li>
+        <li><a href="help.html">Como Reservar</a></li>
+
+        <!-- <li <?php if ($activePage == "index") {
                 echo 'class="active"';
             } ?>><a href="index.php">Início</a></li>
         <li <?php if ($activePage == "meuscontratos") {
@@ -64,10 +65,8 @@ $activePage = basename($_SERVER['PHP_SELF'], ".php");
             } ?>><a href="meuscontratos.php">Meus Contratos</a></li>
         <li <?php if ($activePage == "help") {
                 echo 'class="active"';
-            } ?>><a href="help.php">Como reservar</a></li>
+            } ?>><a href="help.php">Como reservar</a></li> -->
     </ul>
     <!-- Login with firebase -->
     <span id="loginStatus"><u>Entrar ou Registrar</u></span>
 </nav>
-
-<script src="modules/header.js"></script>

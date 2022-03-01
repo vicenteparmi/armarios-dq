@@ -23,12 +23,12 @@ initApp = function () {
             });
         });
       } else {
-        document.getElementById("loginStatus").textContent =
-          "Entrar ou registrar";
+        document.getElementById("loginStatus").ineerHTML =
+          "<u>Entrar ou Registrar</u>";
         document
           .getElementById("loginStatus")
           .addEventListener("click", function () {
-            window.location.href = "auth.php";
+            window.location.href = "auth.html";
           });
       }
     },
