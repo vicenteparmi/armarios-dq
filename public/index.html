@@ -34,52 +34,27 @@
 
   <div class="info-pannel-container">
     <div class="info-pannel">
-      <div id="locker">NI</div>
-      <h3 style="margin: 0;">Vicente K Parmigiani</h3>
-      <p>Status: Regular
-        <br>
-        Contrato feito em 20/02/2020
+      <div id="locker"></div>
+      <h3 style="margin: 0;" id="name">Carregando...</h3>
+      <p>Status: <span id="status"></span>
+        Contrato feito em: <span id="date"></span>
       </p>
-      <button>Gerenciar Armários</button>
+      <a href="meuscontratos.html"><button>Gerenciar Armários</button></a>
     </div>
 
     <div class="info-table">
-      <table class="view-table">
+      <table id="table1" class="view-table">
         <tr>
           <th>Número</th>
           <th>Situação</th>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>Regular</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Regular</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Irregular</td>
         </tr>
       </table>
     </div>
     <div class="info-table">
-      <table class="view-table">
+      <table id="table2" class="view-table">
         <tr>
           <th>Número</th>
           <th>Situação</th>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>Regular</td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Regular</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Irregular</td>
         </tr>
       </table>
     </div>
@@ -88,6 +63,7 @@
   <script defer src="modules/firebaseConfig.js"></script>
   <script src="modules/includeHTML.js"></script>
   <script src="modules/header.js"></script>
+  <script defer src="scripts/index.js"></script>
 </body>
 
 </html>

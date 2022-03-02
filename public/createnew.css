@@ -1,0 +1,59 @@
+.column {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.column-self {
+    width: 40vw;
+    margin: 0 auto;
+
+}
+
+/* Form styles */
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.buttons {
+    text-align: left;
+}
+
+.radio-group {
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.radio-group>label {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.inline {
+    display: inline;
+}
+
+.inline>input {
+    display: inline;
+    width: auto;
+}

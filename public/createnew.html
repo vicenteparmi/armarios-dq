@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armários DQ</title>
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext"
+        rel="stylesheet">
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.6.7/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/9.6.7/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-performance-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="createnew.css">
+</head>
+
+<body>
+    <div w3-include-html="modules/header.html"></div>
+
+    <h2>Solicitar novo contrato</h2>
+
+    <div class="column">
+        <form id="newContractForm" class="column-self">
+            <div class="form-group">
+                <label for="newContractName">Nome completo</label>
+                <input type="text" name="newContractName" id="newContractName" placeholder="Proprietário" required>
+            </div>
+            <div class="form-group">
+                <label for="newContractNumber">Número do Armário</label>
+                <input type="number" id="newContractNumber" name="newContractNumber" min="1" max="348" required>
+            </div>
+            <div class="form-group">
+                <label for="newContractType">Curso</label>
+                <select id="newContractType" name="newContractType" required>
+                    <option value="Química">Química</option>
+                    <option value="Outro">Outro</option>
+                </select>
+                <input style="display: none;" type="text" name="newContractOther" id="newContractOther"
+                    placeholder="Escreva o seu curso">
+            </div>
+            <div class="form-group">
+                <label for="newContractGRR">GRR</label>
+                <input type="number" id="newContractGRR" name="newContractGRR" required placeholder="20221234">
+            </div>
+            <div class="form-group">
+                <label for="newContractEmail">Email</label>
+                <input type="email" name="newContractEmail" id="newContractEmail" placeholder="exemplo@email.com"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="newContractPhone">Telefone</label>
+                <input type="tel" name="newContractPhone" id="newContractPhone" placeholder="(00) 00000-0000" required>
+            </div>
+            <div class="form-group">
+                <label for="newContractPaymentMethod">Forma de Pagamento</label>
+                <select name="newContractPaymentMethod" id="newContractPaymentMethod" required>
+                    <option value="">Selecione</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão (Crédito)">Cartão de Crédito</option>
+                    <option value="Cartão (Débito)">Cartão de Débito</option>
+                    <option value="PIX">PIX</option>
+                </select>
+            </div>
+            <br>
+            <div class="buttons">
+                <button type="reset">Limpar</button>
+                <button type="button" onclick="requestContract()">Solicitar contrato</button>
+            </div>
+        </form>
+
+        <div class="column-self">
+            <h3>Informações do contrato:</h3>
+            <p>
+                <b>Data de início:</b> a partir da confirmação do pagamento.<br>
+                <b>Data de término:</b> último dia letivo de 2022.<br>
+                <b>Valor:</b> <span id="price">Preencha o formulário primeiro.</span><br>
+            </p>
+            <p>Ao assinar este documento, concorda-se com:
+            <ul>
+                <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa) dias a partir do
+                    último dia letivo do ano, sob o risco de arrombamento;</li>
+                <li>Em caso de arrombamento os pertences serão guardados no CAQuí por até 30 (trinta) dias;
+                <li>Não colocar adesivos dentro ou fora dos armários;</li>
+                <li>Não avariar o armário;</li>
+                <li>Não guardar drogas ilícitas e álcool;</li>
+                <li>Em caso de denúncia, o armário poderá ser arrombado para comprovação, caso a denúncia seja inválida
+                    o Centro Acadêmico de Química (CAQuí) se responsabilizará pela compra de um novo cadeado;</li>
+                <li>Não guardar itens de valor nos armários; a responsabilidade será inteiramente do contratante.
+                    Irregularidades implicarão na perda do serviço.</li>
+            </ul>
+            </p>
+        </div>
+    </div>
+
+    <script defer src="modules/firebaseConfig.js"></script>
+    <script src="modules/includeHTML.js"></script>
+    <script src="modules/header.js"></script>
+    <script defer src="scripts/createnew.js"></script>
+
+</body>
+
+</html>

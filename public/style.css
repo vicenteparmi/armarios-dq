@@ -10,7 +10,7 @@ body {
 button {
     background-color: var(--primary);
     color: #fff;
-    border: none;
+    border: 1px solid var(--primary);
     padding: 8px;
     border-radius: 42px;
     font-weight: bold;

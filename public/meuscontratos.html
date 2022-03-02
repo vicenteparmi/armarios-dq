@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Armários DQ</title>
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext"
+        rel="stylesheet">
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.6.7/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/9.6.7/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-performance-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="meuscontratos.css">
+</head>
+
+<body>
+    <div w3-include-html="modules/header.html"></div>
+
+    <h2>Contratos ativos</h2>
+    <table id="table">
+        <colgroup>
+            <col span="1" style="width: 3%;">
+            <col span="1" style="width: 15%;">
+            <col span="1" style="width: 51%;">
+            <col span="1" style="width: 8%;">
+            <col span="1" style="width: 8%;">
+            <col span="1" style="width: 15%;">
+        </colgroup>
+        <tr>
+            <th>Número</th>
+            <th>Situação</th>
+            <th>Proprietário</th>
+            <th>Data do Contrato</th>
+            <th>Vencimento</th>
+            <th>Ações</th>
+        </tr>
+    </table>
+    <div id="loading">Obtendo dados...</div>
+    <a href="createnew.html"><button style="margin-top: 24px; transform: translateX(-50%); margin-left: 50%">Novo
+            Contrato</button></a>
+
+    <script defer src="modules/firebaseConfig.js"></script>
+    <script src="modules/includeHTML.js"></script>
+    <script src="modules/header.js"></script>
+    <script defer src="scripts/mycontracts.js"></script>
+</body>
+
+</html>

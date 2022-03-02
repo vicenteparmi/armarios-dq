@@ -40,4 +40,16 @@ initApp = function () {
 
 window.addEventListener("load", function () {
   initApp();
+
+  switch (window.location.pathname) {
+    case "/index.html":
+      document.getElementById("hdInicio").classList.add("active");
+      break;
+    case "/meuscontratos.html":
+      document.getElementById("hdManage").classList.add("active");
+      break;
+    case "/help.html":
+      document.getElementById("hdHelp").classList.add("active");
+      break;
+  }
 });
