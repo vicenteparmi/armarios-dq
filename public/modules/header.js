@@ -53,3 +53,9 @@ window.addEventListener("load", function () {
       break;
   }
 });
+
+
+// Togle Menu
+function toggleMenu() {
+  document.getElementById("links").classList.toggle("active");
+}

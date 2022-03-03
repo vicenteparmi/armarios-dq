@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "armarios-dq"
+  },
+  "targets": {
+    "armarios-dq": {
+      "hosting": {
+        "armariosdq": [
+          "armariosdq"
+        ]
+      }
+    }
   }
 }

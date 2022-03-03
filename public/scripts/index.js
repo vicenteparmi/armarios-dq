@@ -35,9 +35,12 @@ function prepareTable() {
 
   for (let i = 0; i < numberOfLockers; i++) {
     let content;
-    if (lockers[i] && lockers[i].id == i + 1) {
-      content = lockers[i];
-    } else {
+    for (let i2 = 0; i2 < lockers.length; i2++) {
+      if (lockers[i2].id == i + 1) {
+        content = lockers[i2];
+      }
+    }
+    if (content == undefined) {
       content = {
         id: i + 1,
         situation: "Livre",
@@ -59,7 +62,7 @@ function buildTable(content, location) {
   const id = document.createElement("td");
   const situation = document.createElement("td");
 
-  id.innerHTML = content.id;
+  id.innerHTML = ni(content.id);
   situation.innerHTML = content.situation;
 
   row.appendChild(id);
@@ -86,13 +89,28 @@ firebase.auth().onAuthStateChanged(function (user) {
       .doc(userId)
       .get()
       .then((doc) => {
-        username = doc.data().nome;
-        loadContracts(categoryDocRef, username);
+          if (doc.exists) {
+            username = doc.data().nome;
+            loadContracts(categoryDocRef, username);
+          } else {
+            displayInfo({
+              owner: "Nenhum contrato criado",
+              sit: "Nenhum contrato foi criado por você através do site. Clque em 'Gerenciar' para fazer seu contrato.",
+              id: "NI",
+              date: "...",
+            });
+        }
       });
-  } else {
-    // No user is signed in.
-    var userId = null;
-  }
+} else {
+  // No user is signed in.
+  var userId = null;
+  displayInfo({
+    owner: "Nenhum usuário conectado",
+    sit: "Não há usuário logado. Entre para visualizar seus contratos.",
+    id: "NI",
+    date: "...",
+  });
+}
 });
 
 let contracts = [];
@@ -108,7 +126,7 @@ function loadContracts(user, username) {
       snapshot.forEach((doc) => {
         const data = doc.data();
         const id = pad(doc.id, 3);
-        const date = new Date(data.data.seconds * 1000);
+        const date = new Date(data.date);
         const owner = username;
         const sit = data.situacao;
 
@@ -126,12 +144,21 @@ function loadContracts(user, username) {
       contracts.forEach((contract) => {
         displayInfo(contract);
       });
+
+      if (contracts.length == 0) {
+        displayInfo({
+          owner: "Nenhum contrato",
+          sit: "Nenhum contrato encontrado. Clique em 'Gerenciar' para fazer seu contrato.",
+          id: "NI",
+          date: "...",
+        });
+      }
     });
 }
 
 function displayInfo(info) {
   const name = document.getElementById("name");
-  const number = document.getElementById("locker");
+  const number = ni(document.getElementById("locker"));
   const situation = document.getElementById("status");
   const date = document.getElementById("date");
 
@@ -139,6 +166,10 @@ function displayInfo(info) {
   number.innerHTML += info.id + "<br />";
   situation.innerHTML += info.sit + "<br />";
   date.innerHTML += info.date + "<br />";
+
+  if (info.number == 69) {
+    number.style.transform = "rotate(180deg)";
+  }
 }
 
 // Format number
@@ -146,4 +177,12 @@ function displayInfo(info) {
 function pad(n, length) {
   var len = length - ("" + n).length;
   return (len > 0 ? new Array(++len).join("0") : "") + n;
+}
+
+// NI
+
+function ni(num) {
+  if (num == -1) {
+    return "NI";
+  } else return num;
 }

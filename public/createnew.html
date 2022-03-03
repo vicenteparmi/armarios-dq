@@ -87,7 +87,7 @@
                 <b>Data de término:</b> último dia letivo de 2022.<br>
                 <b>Valor:</b> <span id="price">Preencha o formulário primeiro.</span><br>
             </p>
-            <p>Ao assinar este documento, concorda-se com:
+            <p>Ao solicitar este documento, concorda-se com:
             <ul>
                 <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa) dias a partir do
                     último dia letivo do ano, sob o risco de arrombamento;</li>
@@ -101,6 +101,36 @@
                     Irregularidades implicarão na perda do serviço.</li>
             </ul>
             </p>
+        </div>
+    </div>
+
+    <!-- Summarize the contract and confirm modal: -->
+    <div id="summarizeModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmar contrato</h3>
+            <p>
+                <b>Nome:</b> <span id="sumName"></span><br>
+                <b>Número do Armário:</b> <span id="sumNumber"></span><br>
+                <b>Curso:</b> <span id="sumType"></span><br>
+                <b>GRR:</b> <span id="sumGRR"></span><br>
+                <b>Email:</b> <span id="sumEmail"></span><br>
+                <b>Telefone:</b> <span id="sumPhone"></span><br>
+                <b>Forma de Pagamento:</b> <span id="sumPaymentMethod"></span><br>
+            </p>
+            <p>
+                <b>Valor:</b> R$ <span id="sumPrice"></span>,00<br>
+            </p>
+            <p>
+                <b>Data de início:</b> <span id="sumStartDate"></span><br>
+                <b>Data de término:</b> <span id="sumEndDate"></span><br>
+            </p>
+            <p>
+                <b>Observações:</b> <span id="sumObservations"></span><br>
+            </p>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="cancelContract()">Cancelar contrato</button>
+                <button type="button" class="btn btn-success" onclick="sendContract()">Confirmar contrato</button>
+            </div>
         </div>
     </div>
 

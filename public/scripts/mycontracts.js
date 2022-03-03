@@ -41,7 +41,7 @@ function loadContracts(user, username) {
       snapshot.forEach((doc) => {
         const data = doc.data();
         const id = doc.id;
-        const date = new Date(data.data.seconds*1000);
+        const date = new Date(data.date.seconds * 1000);
         const owner = username;
         const sit = data.situacao;
 
