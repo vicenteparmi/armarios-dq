@@ -31,6 +31,8 @@
 
     <h2>Administrador</h2>
 
+    <button onclick="newContractModal()">Criar contrato</button>
+
     <table id="table">
         <colgroup>
             <col span="1" style="width: 3%;">
@@ -86,12 +88,74 @@
                 </div>
             </form>
         </div>
+    </div>
 
+    <!-- New contract modal -->
+    <div id="newContract" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Novo Contrato</h3>
+            <form id="newContractForm">
+                <div class="input-group">
+                    <label for="newContractNumber">Número do Armário</label>
+                    <input type="text" id="newContractNumber" name="number" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractName">Nome</label>
+                    <input type="text" id="newContractName" name="name" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractUID">UID</label>
+                    <input type="text" id="newContractUid" name="UID" required placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
+                </div>
+                <div class="input-group">
+                    <label for="newContractPhone">Telefone</label>
+                    <input type="text" id="newContractPhone" name="phone" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractEmail">Email</label>
+                    <input type="text" id="newContractEmail" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractCourse">Curso</label>
+                    <input type="text" id="newContractCourse" name="course" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractGRR">GRR</label>
+                    <input type="text" id="newContractGRR" name="grr" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractDate">Data do Contrato</label>
+                    <input type="text" id="newContractDate" name="date" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractPay">Método de pagamento</label>
+                    <input type="text" id="newContractPay" name="pay" required>
+                </div>
+                <div class="input-group">
+                    <label for="newContractStatus">Situação</label>
+                    <select id="newContractStatus" name="status" required>
+                        <option value="Aguardando pagamento">Aguardando pagamento</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Irregular">Irregular</option>
+                        <option value="Livre">Livre</option>
+                        <option value="Problema no cadastro">Problema no cadastro</option>
+                        <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                        <option value="Não utilizável">Não utilizável</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+                    <button type="button" class="btn" onclick="saveNew()">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        <script defer src="modules/firebaseConfig.js"></script>
-        <script src="modules/includeHTML.js"></script>
-        <script src="modules/header.js"></script>
-        <script defer src="scripts/admin.js"></script>
+    <script defer src="modules/firebaseConfig.js"></script>
+    <script src="modules/includeHTML.js"></script>
+    <script src="modules/header.js"></script>
+    <script defer src="scripts/admin.js"></script>
 
 </body>
 

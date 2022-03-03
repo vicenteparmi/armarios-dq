@@ -89,28 +89,28 @@ firebase.auth().onAuthStateChanged(function (user) {
       .doc(userId)
       .get()
       .then((doc) => {
-          if (doc.exists) {
-            username = doc.data().nome;
-            loadContracts(categoryDocRef, username);
-          } else {
-            displayInfo({
-              owner: "Nenhum contrato criado",
-              sit: "Nenhum contrato foi criado por você através do site. Clque em 'Gerenciar' para fazer seu contrato.",
-              id: "NI",
-              date: "...",
-            });
+        if (doc.exists) {
+          username = doc.data().nome;
+          loadContracts(categoryDocRef, username);
+        } else {
+          displayInfo({
+            owner: "Nenhum contrato criado",
+            sit: "Nenhum contrato foi criado por você através do site. Clque em 'Gerenciar' para fazer seu contrato.",
+            id: "NI",
+            date: "...",
+          });
         }
       });
-} else {
-  // No user is signed in.
-  var userId = null;
-  displayInfo({
-    owner: "Nenhum usuário conectado",
-    sit: "Não há usuário logado. Entre para visualizar seus contratos.",
-    id: "NI",
-    date: "...",
-  });
-}
+  } else {
+    // No user is signed in.
+    var userId = null;
+    displayInfo({
+      owner: "Nenhum usuário conectado",
+      sit: "Não há usuário logado. Entre para visualizar seus contratos.",
+      id: "NI",
+      date: "...",
+    });
+  }
 });
 
 let contracts = [];
@@ -126,7 +126,7 @@ function loadContracts(user, username) {
       snapshot.forEach((doc) => {
         const data = doc.data();
         const id = pad(doc.id, 3);
-        const date = new Date(data.date);
+        const date = new Date(data.date.seconds * 1000);
         const owner = username;
         const sit = data.situacao;
 
@@ -161,6 +161,24 @@ function displayInfo(info) {
   const number = ni(document.getElementById("locker"));
   const situation = document.getElementById("status");
   const date = document.getElementById("date");
+
+  // Check if text is more than 100 characters on all fields
+  if (name.innerHTML.length > 100) {
+    name.innerHTML = name.innerHTML.substring(0, 100) + "...";
+    info.owner = "";
+  }
+  if (number.innerHTML.length > 31) {
+    number.innerHTML = number.innerHTML.substring(0, 31) + "...";
+    info.id = "";
+  }
+  if (situation.innerHTML.length > 100) {
+    situation.innerHTML = situation.innerHTML.substring(0, 100) + "...";
+    info.sit = "";
+  }
+  if (date.innerHTML.length > 100) {
+    date.innerHTML = date.innerHTML.substring(0, 100) + "...";
+    info.date = "";
+  }
 
   name.innerHTML = info.owner;
   number.innerHTML += info.id + "<br />";

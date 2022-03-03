@@ -23,7 +23,7 @@ initApp = function () {
             });
         });
       } else {
-        document.getElementById("loginStatus").ineerHTML =
+        document.getElementById("loginStatus").innerHTML =
           "<u>Entrar ou Registrar</u>";
         document
           .getElementById("loginStatus")
@@ -50,6 +50,9 @@ window.addEventListener("load", function () {
       break;
     case "/help.html":
       document.getElementById("hdHelp").classList.add("active");
+      break;
+    case "" || "/":
+      document.getElementById("hdInicio").classList.add("active");
       break;
   }
 });

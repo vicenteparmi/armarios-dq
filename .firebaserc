@@ -6,7 +6,9 @@
     "armarios-dq": {
       "hosting": {
         "armariosdq": [
-          "armariosdq"
+          "armarios",
+          "armariosdq",
+          "dq"
         ]
       }
     }

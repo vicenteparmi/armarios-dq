@@ -1,11 +1,12 @@
 const db = firebase.firestore();
 
 // Find user in database
+let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user) {
         // User is signed in.
-        var userId = user.uid;
+        userId = user.uid;
         const categoryDocRef = db.collection("users").doc(userId);
 
         let username;
@@ -17,7 +18,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 
     } else {
         // No user is signed in.
-        var userId = null;
+        userId = null;
     }
 });
 
@@ -176,32 +177,21 @@ function saveEdit() {
     const sit = document.getElementById("editContractStatus").value;
     let date = document.getElementById("editContractDate").value;
     const id = document.getElementById("contractNumber").innerText;
-    let color = "";
+    let color = getColor(sit);
 
-    switch (sit) {
-        case "Aguardando pagamento":
-            color = "blueviolet";
-            break;
-        case "Regular":
-            color = "green";
-            break;
-        case "Irregular":
-            color = "red";
-            break;
-        case "Livre":
-            color = "blue";
-            break;
-        case "Problema no cadastro":
-            color = "blue";
-            break;
-        case "CAQuí (Reservado)":
-            color = "darkorange";
-            break;
-        case "Não utilizável":
-            color = "gray";
-            break;
-        default:
-            color = "black";
+    if (sit == "Livre") {
+        if (confirm('Deseja realmente tornar este armário livre? (Será removido da base de dados)')) {
+            const docRef = db.collection("armarios").doc(id);
+            docRef.delete().then(function () {
+                console.log("Document successfully deleted!");
+                alert("Contrato deletado com sucesso!");
+                document.getElementById("editContract").style.display = "none";
+            }).catch(function (error) {
+                console.error("Error removing document: ", error);
+            }
+            );
+        }
+        return;
     }
 
     // Update table
@@ -231,4 +221,161 @@ function saveEdit() {
 // Close modal
 function closeModal() {
     document.getElementById("editContract").style.display = "none";
+    document.getElementById("newContract").style.display = "none";
+}
+
+function newContractModal() {
+    document.getElementById("newContract").style.display = "block";
+}
+
+function saveNew() {
+
+    // Get values from modal
+    const number = document.getElementById("newContractNumber").value;
+    const name = document.getElementById("newContractName").value;
+    let uid = document.getElementById("newContractUid").value;
+    const phone = document.getElementById("newContractPhone").value;
+    const email = document.getElementById("newContractEmail").value;
+    const course = document.getElementById("newContractCourse").value;
+    const grr = document.getElementById("newContractGRR").value;
+    let date = document.getElementById("newContractDate").value;
+    const payment = document.getElementById("newContractPay").value;
+    const sit = document.getElementById("newContractStatus").value;
+
+    // Validate fields
+    if (number === "" || payment === "" || name === "" || phone === "" || email === "" || course === "" || grr === "" || date === "" || sit === "") {
+        alert("Preencha todos os campos!");
+        return;
+    }
+
+    // Set UID
+    if (uid === "") {
+        uid = userId;
+    }
+
+    // Set date
+    let dateArray = date.split("/");
+    date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
+
+    // Set color
+    let color = getColor(sit);
+
+    // Get owner reference
+    const ownerRef = db.collection("users").doc(uid);
+
+    // Create contract object
+    const contract = {
+        number: number,
+        situacao: sit,
+        dono: ownerRef,
+        date: date,
+        color: color,
+        payment: payment,
+    };
+
+    // Create user object
+    const user = {
+        nome: name,
+        phone: phone,
+        email: email,
+        course: course,
+        grr: grr,
+        type: course
+    };
+
+
+    // Add contract to database
+
+    db.collection("armarios")
+        .doc(contract.number)
+        .get()
+        .then(function (doc) {
+            if (!doc.exists || doc.data().situacao == "Irregular") {
+                db.collection("armarios")
+                    .doc(contract.number)
+                    .set(contract)
+                    .then(function () {
+                        // Show the success message as an alert
+                        alert("Contrato criado com sucesso!");
+                        // Hide the modal
+                        document.getElementById("newContract").style.display = "none";
+                    })
+                    .catch(function (error) {
+                        // Show the error message as an alert
+                        alert("Erro ao criar contrato: " + error);
+                    });
+            } else {
+                // Show the error message as an alert
+                alert("Erro ao criar contrato: Armário já ocupado!");
+            }
+        });
+
+
+    // Check and add the user to the database only if it doesn't exist
+    db.collection("users")
+        .doc(userId)
+        .get()
+        .then(function (doc) {
+            if (doc.exists) {
+                // Confirm user update
+                if (confirm("Deseja atualizar seus dados?\nSeus dados já se encontram na base de dados, clique em OK para atualizar suas informações.")) {
+                    db.collection("users")
+                        .doc(userId)
+                        .set(user)
+                        .then(function () {
+                            // Show the success message as an alert
+                            alert("Usuário atualizado com sucesso!");
+                        })
+                        .catch(function (error) {
+                            // Show the error message as an alert
+                            alert("Erro ao atualizar usuário: " + error);
+                        });
+                }
+            } else if (doc.exists == false) {
+                // Add the user to the database
+                db.collection("users")
+                    .doc(userId)
+                    .set(user)
+                    .then(function () {
+                        // Show the success message as an alert
+                        alert("Usuário criado com sucesso!");
+                    })
+                    .catch(function (error) {
+                        // Show the error message as an alert
+                        alert("Erro ao criar usuário: " + error);
+                    });
+            }
+        });
+}
+
+function getColor(sit) {
+    let color = "";
+
+    switch (sit) {
+        case "Aguardando pagamento":
+            color = "blueviolet";
+            break;
+        case "Regular":
+            color = "green";
+            break;
+        case "Irregular":
+            color = "red";
+            break;
+        case "Livre":
+            color = "blue";
+            break;
+        case "Problema no cadastro":
+            color = "blue";
+            break;
+        case "CAQuí (Reservado)":
+            color = "darkorange";
+            break;
+        case "Não utilizável":
+            color = "gray";
+            break;
+        default:
+            color = "black";
+    }
+
+    return color;
 }
