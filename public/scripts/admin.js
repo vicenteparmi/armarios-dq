@@ -4,10 +4,17 @@ const db = firebase.firestore();
 let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
+    if (user.uid == "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
         // User is signed in.
         userId = user.uid;
         const categoryDocRef = db.collection("users").doc(userId);
+
+        if (userId == "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
+            loadContracts();
+        } else {
+            alert("Você não tem permissão para acessar essa página.");
+            window.location.href = "index.html";
+        }
 
         let username;
 
@@ -19,6 +26,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     } else {
         // No user is signed in.
         userId = null;
+        alert("Você não tem permissão para acessar essa página.");
+        window.location.href = "index.html";
     }
 });
 
@@ -121,8 +130,6 @@ function buildTable(content, location) {
     location.appendChild(row);
 }
 
-loadContracts();
-
 // Editing contract
 
 function editContract(id) {
@@ -188,8 +195,7 @@ function saveEdit() {
                 document.getElementById("editContract").style.display = "none";
             }).catch(function (error) {
                 console.error("Error removing document: ", error);
-            }
-            );
+            });
         }
         return;
     }
@@ -275,6 +281,7 @@ function saveNew() {
 
     // Create user object
     const user = {
+        id: uid,
         nome: name,
         phone: phone,
         email: email,
@@ -313,14 +320,14 @@ function saveNew() {
 
     // Check and add the user to the database only if it doesn't exist
     db.collection("users")
-        .doc(userId)
+        .doc(user.id)
         .get()
         .then(function (doc) {
             if (doc.exists) {
                 // Confirm user update
-                if (confirm("Deseja atualizar seus dados?\nSeus dados já se encontram na base de dados, clique em OK para atualizar suas informações.")) {
+                if (confirm("Deseja atualizar os dados desse usuário/armário?")) {
                     db.collection("users")
-                        .doc(userId)
+                        .doc(user.id)
                         .set(user)
                         .then(function () {
                             // Show the success message as an alert
@@ -334,7 +341,7 @@ function saveNew() {
             } else if (doc.exists == false) {
                 // Add the user to the database
                 db.collection("users")
-                    .doc(userId)
+                    .doc(user.id)
                     .set(user)
                     .then(function () {
                         // Show the success message as an alert

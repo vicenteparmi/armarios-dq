@@ -200,7 +200,7 @@ function pad(n, length) {
 // NI
 
 function ni(num) {
-  if (num == -1) {
+  if (num == 61) {
     return "NI";
   } else return num;
 }

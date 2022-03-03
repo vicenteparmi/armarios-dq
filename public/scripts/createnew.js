@@ -21,8 +21,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     } else {
         // No user is signed in.
         userId = null;
-        loading.innerHTML =
-            "Não há usuário logado. Entre para visualizar seus contratos.";
+        alert("Você precisa estar logado para solicitar um contrato! Crie uma conta ou faça login.");
+        window.location.href = "auth.html";
     }
 });
 
