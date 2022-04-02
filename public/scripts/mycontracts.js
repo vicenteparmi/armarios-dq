@@ -12,8 +12,8 @@ firebase.auth().onAuthStateChanged(function (user) {
     let username;
 
     db.collection("users").doc(userId).get().then((doc) => {
-        username = doc.data().nome;
-        loadContracts(categoryDocRef, username);
+      username = doc.data().nome;
+      loadContracts(categoryDocRef, username);
     });
 
     loading.remove();
@@ -30,10 +30,10 @@ let contracts = [];
 
 function loadContracts(user, username) {
 
-   let curso = user.get();
-   console.log(curso);
+  let curso = user.get();
+  console.log(curso);
 
-   const lockersRef = db
+  const lockersRef = db
     .collection("armarios")
     .where("dono", "==", user)
     .get()
@@ -54,6 +54,11 @@ function loadContracts(user, username) {
           date: date.toLocaleDateString("pt-BR"),
           expires: expires
         });
+      });
+
+      // Sort contracts by number
+      contracts.sort((a, b) => {
+        return a.id - b.id;
       });
 
       prepareTable();

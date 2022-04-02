@@ -112,7 +112,7 @@ function summarizeContract() {
 
     // Calculate the price
     let price = 0;
-    if ((user.course = "Química")) {
+    if ((user.course == "Química")) {
         price = 20;
     } else {
         price = 35;
@@ -157,6 +157,14 @@ function sendContract() {
                     .then(function () {
                         // Show the success message as an alert
                         alert("Contrato criado com sucesso!");
+
+                        // Log event firebase
+                        firebase.analytics().logEvent("contract_created", {
+                            number: contract.number,
+                            payment: contract.payment,
+                            date: contract.date,
+                        });
+
                         // Hide the modal
                         document.getElementById("summarizeModal").style.display = "none";
                         // Clear the form

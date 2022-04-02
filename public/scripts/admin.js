@@ -5,22 +5,19 @@ let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user.uid == "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
+        
         // User is signed in.
-        userId = user.uid;
-        const categoryDocRef = db.collection("users").doc(userId);
-
-        if (userId == "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
-            loadContracts();
-        } else {
+        if (user.uid != "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
             alert("Você não tem permissão para acessar essa página.");
             window.location.href = "index.html";
         }
+
+        userId = user.uid;
 
         let username;
 
         db.collection("users").doc(userId).get().then((doc) => {
             username = doc.data().nome;
-            //loadContracts(categoryDocRef, username);
         });
 
     } else {
@@ -46,6 +43,7 @@ function loadContracts() {
                 const date = new Date(data.date.seconds * 1000);
                 const sit = data.situacao;
                 const color = data.color;
+                const pay = data.payment;
                 let owner;
 
                 const expires = "31/12/" + date.getFullYear();
@@ -67,11 +65,19 @@ function loadContracts() {
                     ownerRef: ownerRef,
                     date: date.toLocaleDateString("pt-BR"),
                     color: color,
+                    pay: pay,
                     expires: expires
                 });
             });
 
+            // Sort contracts by number
+            contracts.sort((a, b) => {
+                return a.id - b.id;
+            });
+
             prepareTable();
+
+            document.getElementById("table").style.display = "table";
         });
 }
 
@@ -139,6 +145,7 @@ function editContract(id) {
 
     document.getElementById("editContractStatus").value = sit;
     document.getElementById("editContractDate").value = date;
+    document.getElementById("infoPay").innerText = contract.pay;
 
     const owner = contract.ownerRef.get().then((doc) => {
         document.getElementById("infoName").innerText = doc.data().nome;
@@ -150,11 +157,6 @@ function editContract(id) {
     });
 
     document.getElementById("contractNumber").innerText = id;
-    // document.getElementById("infoName").innerText = doc.data().nome;;
-    // document.getElementById("infoPhone").innerText = contract.owner.get().data().phone;
-    // document.getElementById("infoEmail").innerText = contract.owner.get().data().email;
-    // document.getElementById("infoCourse").innerText = contract.owner.get().data().course;
-    // document.getElementById("infoGRR").innerText = contract.owner.get().data().grr;
 
     document.getElementById("editContract").style.display = "block";
 }
@@ -232,6 +234,7 @@ function closeModal() {
 
 function newContractModal() {
     document.getElementById("newContract").style.display = "block";
+    document.getElementById("newContractDate").value = new Date().toLocaleDateString();
 }
 
 function saveNew() {

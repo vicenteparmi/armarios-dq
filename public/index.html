@@ -2,7 +2,8 @@
 <html lang="pt">
 
 <head>
-  <title>Armários DQ</title>
+  <title>Armários DQ | Início</title>
+  <link rel="icon" type="image/png" href="/files/Logo.png">
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,10 +44,15 @@
         Contrato feito em: <span id="date"></span>
       </p>
       <a href="meuscontratos.html"><button>Gerenciar Armários</button></a>
-      <p>Para fazer um <b>novo contrato</b> clique na aba gerenciar armários.</p>
     </div>
 
-    <div class="info-table">
+    <div id="pre-load">
+      <p>Veja a situação de todos os armários clicando no botão abaixo. Para fazer um <b>novo contrato</b> clique na aba
+        gerenciar armários.</p>
+      <button onclick="loadPage()">Carregar armários</button>
+    </div>
+
+    <div class="info-table" id="loaded-table1">
       <table id="table1" class="view-table">
         <tr>
           <th>Número</th>
@@ -54,7 +60,7 @@
         </tr>
       </table>
     </div>
-    <div class="info-table">
+    <div class="info-table" id="loaded-table2">
       <table id="table2" class="view-table">
         <tr>
           <th>Número</th>

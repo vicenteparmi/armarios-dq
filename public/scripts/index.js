@@ -1,30 +1,36 @@
 const db = firebase.firestore();
 
-// Load table
 let lockers = [];
 
-const lockersRef = db.collection("armarios");
+// Load table
+function loadPage() {
+  const lockersRef = db.collection("armarios");
 
-lockersRef.get().then((snapshot) => {
-  snapshot.forEach((doc) => {
-    const data = doc.data();
-    const id = doc.id;
-    const date = data.date;
-    const owner = data.dono;
-    const sit = data.situacao;
-    const color = data.color;
+  lockersRef.get().then((snapshot) => {
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const id = doc.id;
+      const date = data.date;
+      const owner = data.dono;
+      const sit = data.situacao;
+      const color = data.color;
 
-    lockers.push({
-      id: id,
-      date: date,
-      owner: owner,
-      situation: sit,
-      color: color,
+      lockers.push({
+        id: id,
+        date: date,
+        owner: owner,
+        situation: sit,
+        color: color,
+      });
     });
-  });
 
-  prepareTable();
-});
+    prepareTable();
+
+    document.getElementById("pre-load").style.display = "none";
+    document.getElementById("loaded-table1").style.display = "block";
+    document.getElementById("loaded-table2").style.display = "block";
+  });
+}
 
 // Build table
 

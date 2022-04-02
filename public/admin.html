@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Armários DQ</title>
+    <title>Administrador | Armários DQ</title>
+    <link rel="icon" type="image/png" href="/files/Logo.png">
     <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext"
         rel="stylesheet">
 
@@ -30,27 +31,31 @@
     <div w3-include-html="modules/header.html"></div>
 
     <h2>Administrador</h2>
+    <p>Essa página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login na conta autorizada.</p>
 
+    <button onclick="loadContracts()">Carregar contratos</button>
     <button onclick="newContractModal()">Criar contrato</button>
 
-    <table id="table">
-        <colgroup>
-            <col span="1" style="width: 3%;">
-            <col span="1" style="width: 15%;">
-            <col span="1" style="width: 51%;">
-            <col span="1" style="width: 8%;">
-            <col span="1" style="width: 8%;">
-            <col span="1" style="width: 15%;">
-        </colgroup>
-        <tr>
-            <th>Número</th>
-            <th>Situação</th>
-            <th>Proprietário</th>
-            <th>Data do Contrato</th>
-            <th>Vencimento</th>
-            <th>Ações</th>
-        </tr>
-    </table>
+    <div overflow-x="auto">
+        <table id="table">
+            <colgroup>
+                <col span="1" style="width: 3%;">
+                <col span="1" style="width: 15%;">
+                <col span="1" style="width: 51%;">
+                <col span="1" style="width: 8%;">
+                <col span="1" style="width: 8%;">
+                <col span="1" style="width: 15%;">
+            </colgroup>
+            <tr>
+                <th>Número</th>
+                <th>Situação</th>
+                <th>Proprietário</th>
+                <th>Data do Contrato</th>
+                <th>Vencimento</th>
+                <th>Ações</th>
+            </tr>
+        </table>
+    </div>
 
     <!-- Edit contract popup -->
     <div id="editContract" class="modal">
@@ -63,6 +68,7 @@
                 <b>Email:</b> <span id="infoEmail"></span><br>
                 <b>Curso:</b> <span id="infoCourse"></span><br>
                 <b>GRR:</b> <span id="infoGRR"></span><br>
+                <b>Método de Pagamento:</b> <span id="infoPay"></span><br>
             </p>
             <form id="editContractForm">
                 <input type="hidden" id="editContractId" name="id">
@@ -106,7 +112,8 @@
                 </div>
                 <div class="input-group">
                     <label for="newContractUID">UID</label>
-                    <input type="text" id="newContractUid" name="UID" required placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
+                    <input type="text" id="newContractUid" name="UID" required
+                        placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
                 </div>
                 <div class="input-group">
                     <label for="newContractPhone">Telefone</label>
