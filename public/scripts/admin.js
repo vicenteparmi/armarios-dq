@@ -5,7 +5,7 @@ let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
     if (user.uid == "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
-        
+
         // User is signed in.
         if (user.uid != "qPjBuIUwEBRXsUYipLGzi4HVOeA2") {
             alert("Você não tem permissão para acessar essa página.");
@@ -33,56 +33,68 @@ let contracts = [];
 
 function loadContracts() {
 
-    db
-        .collection("armarios")
-        .get()
-        .then((snapshot) => {
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                const id = doc.id;
-                const date = new Date(data.date.seconds * 1000);
-                const sit = data.situacao;
-                const color = data.color;
-                const pay = data.payment;
-                let owner;
+    if (contracts.length == 0) {
+        db
+            .collection("armarios")
+            .get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const id = doc.id;
+                    const date = new Date(data.date.seconds * 1000);
+                    const sit = data.situacao;
+                    const color = data.color;
+                    const pay = data.payment;
+                    let owner;
 
-                const expires = "31/12/" + date.getFullYear();
+                    const expires = "31/12/" + date.getFullYear();
+                    const ownerRef = doc.data().dono;
 
-                try {
-                    owner = doc.data().dono.get().then((doc) => {
-                        document.getElementById("ow" + id).innerText = doc.data().nome;
+                    contracts.push({
+                        id: id,
+                        sit: sit,
+                        owner: owner,
+                        ownerRef: ownerRef,
+                        date: date.toLocaleDateString("pt-BR"),
+                        color: color,
+                        pay: pay,
+                        expires: expires
                     });
-                } catch (e) {
-                    console.log(e);
-                }
 
-                const ownerRef = doc.data().dono;
-
-                contracts.push({
-                    id: id,
-                    sit: sit,
-                    owner: owner,
-                    ownerRef: ownerRef,
-                    date: date.toLocaleDateString("pt-BR"),
-                    color: color,
-                    pay: pay,
-                    expires: expires
+                    owner = doc.data().dono.get().then((doc) => {
+                        //document.getElementById("ow" + id).innerText = doc.data().nome;
+                        contracts.filter(c => c.id == id)[0].ownerName = doc.data().nome;
+                    });
                 });
+
+                // Sort contracts by number
+                contracts.sort((a, b) => {
+                    return a.id - b.id;
+                });
+
+                // Set stats values
+                const totalNumber = contracts.length - contracts.filter(c => c.sit == "Não utilizável").length - contracts.filter(c => c.sit == "CAQuí (Reservado)").length
+                document.getElementById("big-number").innerText = totalNumber;
+                document.getElementById("cRegulares").innerText = contracts.filter(c => c.sit == "Regular").length;
+                document.getElementById("cIrregulares").innerText = contracts.filter(c => c.sit == "Irregular").length;
+                document.getElementById("cAguaP").innerText = contracts.filter(c => c.sit == "Aguardando pagamento").length;
+                document.getElementById("cInutilizavel").innerText = contracts.filter(c => c.sit == "Não utilizável").length;
+
+                document.getElementById("table").style.display = "table";
             });
+    } else {
+        document.getElementById("table").style.display = "table";
+    }
 
-            // Sort contracts by number
-            contracts.sort((a, b) => {
-                return a.id - b.id;
-            });
-
-            prepareTable();
-
-            document.getElementById("table").style.display = "table";
-        });
 }
 
+loadContracts()
+
 function prepareTable() {
+    document.getElementById("popup-table").style.display = "block";
     const table = document.getElementById("table");
+    table.innerHTML = "<colgroup> <col span=\"1\" style=\"width: 3%;\"> <col span=\"1\" style=\"width: 15%;\"> <col span=\"1\" style=\"width: 51%;\"> <col span=\"1\" style=\"width: 8%;\"> <col span=\"1\" style=\"width: 8%;\"> <col span=\"1\" style=\"width: 15%;\"> </colgroup><tr> <th>Número</th> <th>Situação</th> <th>Proprietário</th> <th>Data do Contrato</th> <th>Vencimento</th> <th>Ações</th> </tr>";
+    table.style.display = "table"
 
     for (let i = 0; i < contracts.length; i++) {
         let content = contracts[i];
@@ -107,6 +119,7 @@ function buildTable(content, location) {
     situation.style.color = content.color;
     date.innerText = content.date;
     owner.id = "ow" + content.id;
+    owner.innerText = (content.ownerName) ? content.ownerName : "Usuário não encontrado";
     expires.innerText = content.expires;
 
     row.id = "row" + content.id;
@@ -147,14 +160,20 @@ function editContract(id) {
     document.getElementById("editContractDate").value = date;
     document.getElementById("infoPay").innerText = contract.pay;
 
-    const owner = contract.ownerRef.get().then((doc) => {
-        document.getElementById("infoName").innerText = doc.data().nome;
-        document.getElementById("infoName").innerText = doc.data().nome;;
-        document.getElementById("infoPhone").innerText = doc.data().phone;
-        document.getElementById("infoEmail").innerText = doc.data().email;
-        document.getElementById("infoCourse").innerText = doc.data().course;
-        document.getElementById("infoGRR").innerText = "GRR" + doc.data().grr;
-    });
+    let owner;
+    try {
+        owner = contract.ownerRef.get().then((doc) => {
+            document.getElementById("infoName").innerText = doc.data().nome;
+            document.getElementById("infoName").innerText = doc.data().nome;;
+            document.getElementById("infoPhone").innerText = doc.data().phone;
+            document.getElementById("infoEmail").innerText = doc.data().email;
+            document.getElementById("infoCourse").innerText = doc.data().course;
+            document.getElementById("infoGRR").innerText = "GRR" + doc.data().grr;
+        });
+    } catch (e) {
+        console.log(e);
+        owner = null;
+    }
 
     document.getElementById("contractNumber").innerText = id;
 
@@ -356,6 +375,98 @@ function saveNew() {
                     });
             }
         });
+}
+
+function closeTable() {
+    document.getElementById("popup-table").style.display = "none";
+}
+
+function preContract(mode) {
+
+    // Get values from modal
+    const number = document.getElementById("newContractNumber").value;
+    let date = document.getElementById("newContractDate").value;
+
+    // Validate fields
+    if (number === "") {
+        alert("Preencha o número do armário!");
+        return;
+    }
+
+    // Set date
+    let dateArray = date.split("/");
+    date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
+
+    // Get owner reference
+    const ownerRef = db.collection("users").doc(number);
+
+    let contract;
+
+    switch (mode) {
+        case 0:
+            contract = {
+                number: number,
+                situacao: "Irregular",
+                color: getColor("Irregular"),
+                date: date,
+                dono: ownerRef,
+                payment: "Não utilizado"
+            };
+            break;
+        case 1:
+            contract = {
+                number: number,
+                situacao: "Não utilizável",
+                color: getColor("Não utilizável"),
+                date: date,
+                dono: ownerRef,
+                payment: "Não utilizado"
+            };
+            break;
+    }
+
+    // Add contract to database
+    db.collection("armarios")
+        .doc(contract.number)
+        .set(contract)
+        .then(function () {
+            // Show the success message as an alert
+            alert("Contrato criado com sucesso!");
+            // Hide the modal
+            document.getElementById("newContract").style.display = "none";
+        })
+        .catch(function (error) {
+            // Show the error message as an alert
+            alert("Erro ao criar contrato: " + error);
+        });
+
+    // Set user
+
+    const user = {
+        id: number,
+        nome: "Não informado",
+        phone: "Não informado",
+        email: "Não informado",
+        course: "Não informado",
+        grr: "Não informado",
+        type: "Não informado",
+    };
+
+    db.collection("users")
+        .doc(user.id)
+        .set(user)
+        .then(function () {
+            // Show the success message as an alert
+            alert("Usuário criado com sucesso!");
+        })
+        .catch(function (error) {
+            // Show the error message as an alert
+            alert("Erro ao criar usuário: " + error);
+        });
+}
+
+function filterContract() {
+    alert("Filtro ainda não implementado!");
 }
 
 function getColor(sit) {
