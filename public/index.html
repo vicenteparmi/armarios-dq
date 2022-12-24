@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext"
+  <link href="https://fonts.googleapis.com/css?family=Muli:400,600,700,800,900&amp;display=swap&amp;subset=latin-ext"
     rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plaster&display=swap" rel="stylesheet">
@@ -22,12 +22,12 @@
   <script defer src="/__/firebase/9.6.7/firebase-auth-compat.js"></script>
   <script defer src="/__/firebase/9.6.7/firebase-database-compat.js"></script>
   <script defer src="/__/firebase/9.6.7/firebase-firestore-compat.js"></script>
-  <script defer src="/__/firebase/9.6.7/firebase-functions-compat.js"></script>
+  <!-- <script defer src="/__/firebase/9.6.7/firebase-functions-compat.js"></script>
   <script defer src="/__/firebase/9.6.7/firebase-messaging-compat.js"></script>
-  <script defer src="/__/firebase/9.6.7/firebase-storage-compat.js"></script>
+  <script defer src="/__/firebase/9.6.7/firebase-storage-compat.js"></script> -->
   <script defer src="/__/firebase/9.6.7/firebase-analytics-compat.js"></script>
-  <script defer src="/__/firebase/9.6.7/firebase-remote-config-compat.js"></script>
-  <script defer src="/__/firebase/9.6.7/firebase-performance-compat.js"></script>
+  <!-- <script defer src="/__/firebase/9.6.7/firebase-remote-config-compat.js"></script>
+  <script defer src="/__/firebase/9.6.7/firebase-performance-compat.js"></script> -->
 
   <link rel="stylesheet" href="index.css">
 
@@ -36,7 +36,211 @@
 <body>
   <div w3-include-html="modules/header.html"></div>
 
-  <div class="info-pannel-container">
+  <!-- Title section -->
+
+  <div class="section blue-bg">
+    <!-- Text -->
+    <div class="title-div">
+      <h1>Armários do<br>Departamento de Química</h1>
+      <p>Sistema de controle e gerenciamento dos contratos de armários do Departamento de Química.</p>
+      <button onclick="window.location.href = '/createnew.html'">
+        Fazer contrato</button>
+    </div>
+  </div>
+
+  <!-- My contracts section -->
+
+  <div class="section" id="user-lockers">
+    <div class="section-title">
+      <h2>Meus contratos</h2>
+      <p>Veja a situação de todos os seus armários.</p>
+    </div>
+    <div class="info-pannel-container" id="lockers-holder">
+      <div class="locker locker-new">
+        <a href="createnew.html" style="color: white; text-decoration: none;">
+          <h1>+</h1>
+          <p><b>Novo contrato</b></p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tutorial section -->
+
+  <div class="section">
+    <div class="section-title">
+      <h2>Como faço para ter meu armário no
+        Departamento de Química?</h2>
+      <p>Os armários do DQ pertencem ao CAQuí (Centro Acadêmico de Química) e somos os responsáveis pela locação e
+        contratos. Quer um para você? Só seguir o passo a passo abaixo!</p>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="tutorial-step">
+      <div class="step-side1">
+        <h3 class="step-big-number">1.</h3>
+        <h3 class="step-title">Escolha um armário</h3>
+        <p>Vá até o Departamento de Química e encontre um armário que você goste e que esteja sem cadeado.</p>
+      </div>
+      <div class="step-side2">
+        <div class="locker animated-locker" style="animation-delay: -1s;">
+          <span class="locker-title">320</span>
+        </div>
+        <div class="locker animated-locker">
+          <span class="locker-title">321</span>
+        </div>
+        <div class="locker animated-locker" style="animation-delay: -3s;">
+          <span class="locker-title">322</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="tutorial-step reverse">
+      <div class="step-side2">
+        <!-- Table with example data -->
+        <table class="example-table">
+          <tr>
+            <th>Armário</th>
+            <th>Situação</th>
+          </tr>
+          <tr>
+            <td>320</td>
+            <td>Regular</td>
+          </tr>
+          <tr class="animated-table">
+            <td>321</td>
+            <td>Livre</td>
+          </tr>
+          <tr>
+            <td>322</td>
+            <td>Regular</td>
+          </tr>
+        </table>
+      </div>
+      <div class="step-side1">
+        <h3 class="step-big-number">2.</h3>
+        <h3 class="step-title">Verifique a disponibilidade no site</h3>
+        <p>Acesse o site dos armários (sim, esse aqui!) e vá para a aba Todos os armários. Ali você poderá ver a relação
+          de todos os armários e a sua situação. Se o armário estiver marcado como livre você poderá fazer o contrato!
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="tutorial-step">
+      <div class="step-side1">
+        <h3 class="step-big-number">3.</h3>
+        <h3 class="step-title">Faça o contrato</h3>
+        <p>Para fazer o contrato você precisa preencher o formulário que está disponível no site. Depois de preenchido,
+          você deverá realizar o pagamento conforme as orientações e enviar o comprovante. Após a análise o armário será
+          marcado como regular.</p>
+      </div>
+      <div class="step-side2" style="flex-direction: column;">
+        <p class="type-field-example-label">Nome completo:</p>
+        <div id="type-field1" class="type-field-example">
+        </div>
+        <p class="type-field-example-label">Número do armário:</p>
+        <div id="type-field2" class="type-field-example">
+        </div>
+        <p class="type-field-example-label">Email:</p>
+        <div id="type-field3" class="type-field-example">
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prices -->
+
+  <div class="section blue-bg">
+    <div class="section-title" style="align-items: center; display: flex; text-align: center; flex-direction: column;">
+      <h2>Nossas opções de contrato</h2>
+      <p>Veja os preços dos contratos de armários.</p>
+    </div>
+
+    <div class="options-holder">
+      <div class="option-card">
+        <h3>Contrato anual</h3>
+        <p>Válido por 12 meses</p>
+        <div class="option-card-prices">
+          <p>
+            Estudantes e comunidade<br>
+            <span class="price">R$35,00</span>/ano
+          </p>
+          <p>
+            Estudantes de Química*<br>
+            <span class="price">R$20,00</span>/ano
+          </p>
+        </div>
+      </div>
+      <div class="option-card" style="background-color: #aaa;">
+        <h3>Contrato semestral</h3>
+        <p>Válido por 6 meses</p>
+        <div class="option-card-prices">
+          <p>
+            Estudantes e comunidade<br>
+            <span class="price">R$35,00</span>/semestre
+          </p>
+          <p>
+            Estudantes de Química*<br>
+            <span class="price">R$20,00</span>/semestre
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p style="text-align: left; margin-top: 20px; font-size: 12px; font-weight: 500;">* Cursos 12D, 12B, 104A, 12E da
+      UFPR.</p>
+
+  </div>
+
+  <!-- FAQ -->
+
+  <div class="section">
+    <div class="section-title">
+      <h2>Perguntas frequentes</h2>
+    </div>
+    <br>
+    <div class="faq-holder">
+      <div class="faq-card">
+        <h3>O que acontece após o vencimento do contrato?</h3>
+        <p>Após a data de vencimento você terá 30 dias para renovar o contrato ou esvaziá-lo. Após esse prazo seu
+          armário poderá ser arrombado pelos membros do CAQuí. Todos os ítens contidos no armário serão guardados por no
+          mínimo 15 dias.</p>
+      </div>
+      <div class="faq-card">
+        <h3>Gostaria de trocar de armário, é possível?</h3>
+        <p>Sim. Essa atualização será adicionada em breve à nosso site. Até lá, basta falar com um dos membros do Centro
+          Acadêmico.</p>
+      </div>
+      <div class="faq-card">
+        <h3>Quais são as formas de pagamento?</h3>
+        <p>Você poderá fazer o pagamento por PIX ou em dinheiro com um dos membros do CAQuí. Após o pagamento o recibo
+          deve ser enviado para o email <a href="mailto:caqui.ufpr+armario@gmail.com">caqui.ufpr+armario@gmail.com</a>.
+          Se tudo estiver ok, seu armário será marcado como regular num prazo de 7 dias.
+        </p>
+      </div>
+      <div class="faq-card">
+        <h3>Estou com algum problema ou dúvida com relação aos armários.</h3>
+        <p>Entre em contato com a gente através de nossas redes sociais ou email. Os links podem ser encontrados no
+          final da página.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+
+  <div class="section blue-bg" style="flex-direction: row;">
+    <img src="files/logo.png" alt="Logo do CAQuí" style="width: 100px; height: 100px; margin-right: 24px;">
+    <div class="section-title">
+      <h2 style="max-width: none">Centro Acadêmico de Química UFPR</h2>
+      <p style="max-width: none;">Gestão Arnold Sommerfeld (2023)<br>Criado e desenvolvido por <a
+          href="https://linktr.ee/vicenteparmi">Vicente Parmigiani</a>.</p>
+    </div>
+  </div>
+
+  <!-- <div class="info-pannel-container">
     <div class="info-pannel">
       <div id="locker"></div>
       <h3 style="margin: 0;" id="name">Carregando...</h3>
@@ -68,7 +272,7 @@
         </tr>
       </table>
     </div>
-  </div>
+  </div> -->
 
   <script defer src="modules/firebaseConfig.js"></script>
   <script src="modules/includeHTML.js"></script>

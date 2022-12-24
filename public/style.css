@@ -1,9 +1,10 @@
 :root {
     --primary: darkorange;
+    --secondary: #0C77C6;
 }
 
 body {
-    margin: 100px 5vw 48px 5vw;
+    margin: 0;
     font-family: 'Muli', 'Open Sans', sans-serif;
 }
 
@@ -22,4 +23,26 @@ button:hover {
     background-color: #fff;
     color: var(--primary);
     border: solid 1px var(--primary);
+}
+
+a {
+    color: var(--primary);
+}
+
+.section-default {
+    padding: 32px 5vw 32px 5vw;
+}
+
+.section-title-default {
+    text-align: center;
+    margin-bottom: 32px;
+    background-color: var(--secondary);
+    padding: 108px 5vw 32px 5vw;
+}
+
+.section-title-default h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0px;
+    color: #fff;
 }

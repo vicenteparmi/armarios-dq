@@ -62,3 +62,17 @@ window.addEventListener("load", function () {
 function toggleMenu() {
   document.getElementById("links").classList.toggle("active");
 }
+
+// Change colors on scroll (header)
+
+window.onscroll = function () {
+  updateHeader();
+}
+
+function updateHeader() {
+  if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+    document.getElementById("header").classList.add("active-header");
+  } else {
+    document.getElementById("header").classList.remove("active-header");
+  }
+}

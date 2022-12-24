@@ -107,15 +107,12 @@ firebase.auth().onAuthStateChanged(function (user) {
           });
         }
       });
+
+    // Display user's lockers
+    document.getElementById("user-lockers").style.display = "block";
   } else {
     // No user is signed in.
     var userId = null;
-    displayInfo({
-      owner: "Nenhum usuário conectado",
-      sit: "Não há usuário logado. Entre para visualizar seus contratos.",
-      id: "NI",
-      date: "...",
-    });
   }
 });
 
@@ -135,8 +132,8 @@ function loadContracts(user, username) {
         const date = new Date(data.date.seconds * 1000);
         const owner = username;
         const sit = data.situacao;
-
-        const expires = "31/12/" + date.getFullYear();
+        const color = data.color;
+        const expires = data.expires == undefined ? "..." : data.expires;
 
         contracts.push({
           id: id,
@@ -144,21 +141,13 @@ function loadContracts(user, username) {
           owner: owner,
           date: date.toLocaleDateString("pt-BR"),
           expires: expires,
+          color: color,
         });
       });
 
       contracts.forEach((contract) => {
         displayInfo(contract);
       });
-
-      if (contracts.length == 0) {
-        displayInfo({
-          owner: "Nenhum contrato",
-          sit: "Nenhum contrato encontrado. Clique em 'Gerenciar' para fazer seu contrato.",
-          id: "NI",
-          date: "...",
-        });
-      }
     });
 }
 
@@ -168,32 +157,41 @@ function displayInfo(info) {
   const situation = document.getElementById("status");
   const date = document.getElementById("date");
 
-  // Check if text is more than 100 characters on all fields
-  if (name.innerHTML.length > 100) {
-    name.innerHTML = name.innerHTML.substring(0, 100) + "...";
-    info.owner = "";
-  }
-  if (number.innerHTML.length > 31) {
-    number.innerHTML = number.innerHTML.substring(0, 31) + "...";
-    info.id = "";
-  }
-  if (situation.innerHTML.length > 100) {
-    situation.innerHTML = situation.innerHTML.substring(0, 100) + "...";
-    info.sit = "";
-  }
-  if (date.innerHTML.length > 100) {
-    date.innerHTML = date.innerHTML.substring(0, 100) + "...";
-    info.date = "";
-  }
+  // Get contracts holder
+  const holder = document.getElementById("lockers-holder");
 
-  name.innerHTML = info.owner;
-  number.innerHTML += info.id + "<br />";
-  situation.innerHTML += info.sit + "<br />";
-  date.innerHTML += info.date + "<br />";
+  // Create divs
+  const locker = document.createElement("div");
+  const lockerNumber = document.createElement("div");
+  const lockerSituation = document.createElement("div");
+  const lockerDate = document.createElement("div");
+
+  // Add classes
+  locker.classList.add("locker");
+  lockerNumber.classList.add("locker-title");
+  lockerSituation.classList.add("locker-status");
+  lockerDate.classList.add("locker-date");
+
+  // Set color
+  lockerSituation.style.backgroundColor = info.color;
+
+  // Add content
+  lockerNumber.innerHTML = info.id;
+  lockerSituation.innerHTML = info.sit;
+  lockerDate.innerHTML =
+    "Validade<br/><b>" +
+    new Date(info.expires).toLocaleDateString("pt-BR") +
+    "</b>";
 
   if (info.number == 69) {
-    number.style.transform = "rotate(180deg)";
+    lockerNumber.style.transform = "rotate(90deg)";
   }
+
+  // Add to holder
+  locker.appendChild(lockerNumber);
+  locker.appendChild(lockerSituation);
+  locker.appendChild(lockerDate);
+  holder.appendChild(locker);
 }
 
 // Format number
@@ -210,3 +208,71 @@ function ni(num) {
     return "NI";
   } else return num;
 }
+
+// Form type animation
+
+// Get form fields
+
+const exampleName = document.getElementById("type-field1");
+const exampleNumber = document.getElementById("type-field2");
+const exampleEmail = document.getElementById("type-field3");
+
+// Animate
+
+var letter = 0;
+
+const namesExample = ["Centro Acadêmico de Química", "Vicente K. Parmigiani", "Arnold Sommerfeld"];
+const numbersExample = ["12", "321", "69"];
+const emailsExample = ["caqui.ufpr@gmail.com", "vicenteparmigiani@ufpr.br", "arnoldsommerfeld2023@gmail.com"];
+
+let nameExample = namesExample[0];
+let numberExample = numbersExample[0];
+let emailExample = emailsExample[0];
+let currentExample = 0;
+var speed = 50;
+
+function typeWriter() {
+  if (letter < nameExample.length) {
+    exampleName.innerHTML += nameExample.charAt(letter);
+    letter++;
+    setTimeout(typeWriter, speed);
+  } else if (letter < nameExample.length + numberExample.length) {
+    exampleNumber.innerHTML += numberExample.charAt(letter - nameExample.length);
+    letter++;
+    setTimeout(typeWriter, speed);
+  } else if (letter < nameExample.length + numberExample.length + emailExample.length) {
+    exampleEmail.innerHTML += emailExample.charAt(letter - nameExample.length - numberExample.length);
+    letter++;
+    setTimeout(typeWriter, speed);
+  } else {
+    // Clear and reset animation delete
+    if (exampleName.innerHTML.length > 0) {
+      exampleName.innerHTML = exampleName.innerHTML.slice(0, -1);
+      setTimeout(typeWriter, speed/2);
+      return;
+    } else if (exampleNumber.innerHTML.length > 0) {
+      exampleNumber.innerHTML = exampleNumber.innerHTML.slice(0, -1);
+      setTimeout(typeWriter, speed/2);
+      return;
+    } else if (exampleEmail.innerHTML.length > 0) {
+      exampleEmail.innerHTML = exampleEmail.innerHTML.slice(0, -1);
+      setTimeout(typeWriter, speed/2);
+      return;
+    }
+    
+    // Reset animation
+    letter = 0;
+    setTimeout(typeWriter, 1000);
+
+    // Set next texts
+    currentExample = (currentExample + 1) % namesExample.length;
+    nameExample = namesExample[currentExample];
+    numberExample = numbersExample[currentExample];
+    emailExample = emailsExample[currentExample];
+  }
+
+  // Random speed
+  speed = Math.floor(Math.random() * 100) + 50;
+}
+
+typeWriter();

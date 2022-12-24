@@ -27,38 +27,45 @@
     <link rel="stylesheet" href="meuscontratos.css">
 </head>
 
-<body>
+<div>
     <div w3-include-html="modules/header.html"></div>
 
-    <h2>Contratos ativos</h2>
 
-    <div style="overflow-x: auto;">
-        <table id="table">
-            <colgroup>
-                <col span="1" style="width: 3%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 51%;">
-                <col span="1" style="width: 8%;">
-                <col span="1" style="width: 8%;">
-            </colgroup>
-            <tr>
-                <th>Número</th>
-                <th>Situação</th>
-                <th>Proprietário</th>
-                <th>Data do Contrato</th>
-                <th>Vencimento</th>
-            </tr>
-        </table>
+    <div class="section-title-default">
+        <h2>Contratos ativos</h2>
     </div>
-    <div id="loading">Obtendo dados...</div>
-    <a href="createnew.html"><button
-            style="margin-top: 24px; transform: translateX(-50%); margin-left: 50%; z-index: -1; position: absolute;">Novo
-            Contrato</button></a>
 
+    <div class="section-default">
+
+        <div style="overflow-x: auto;">
+            <table id="table">
+                <colgroup>
+                    <col span="1" style="width: 3%;">
+                    <col span="1" style="width: 15%;">
+                    <col span="1" style="width: 51%;">
+                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 8%;">
+                </colgroup>
+                <tr>
+                    <th>Número</th>
+                    <th>Situação</th>
+                    <th>Proprietário</th>
+                    <th>Data do Contrato</th>
+                    <th>Vencimento</th>
+                </tr>
+            </table>
+        </div>
+        <div id="loading">Obtendo dados...</div>
+        <a href="createnew.html"><button
+                style="margin-top: 24px; transform: translateX(-50%); margin-left: 50%; z-index: -1; position: absolute;">Novo
+                Contrato</button></a>
+
+    </div>
+    
     <script defer src="modules/firebaseConfig.js"></script>
     <script src="modules/includeHTML.js"></script>
     <script src="modules/header.js"></script>
     <script defer src="scripts/mycontracts.js"></script>
-</body>
+    </body>
 
 </html>
