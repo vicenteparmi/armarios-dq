@@ -12,7 +12,7 @@ initApp = function () {
         var providerData = user.providerData;
         user.getIdToken().then(function (accessToken) {
           document.getElementById("loginStatus").textContent =
-            "Olá, " + displayName + "!";
+            "<i class=\"material-icons\">account_circle</i> <spam>Olá, " + displayName + "!</spam>";
           document
             .getElementById("loginStatus")
             .addEventListener("click", function () {
@@ -24,7 +24,7 @@ initApp = function () {
         });
       } else {
         document.getElementById("loginStatus").innerHTML =
-          "<u>Entrar ou Registrar</u>";
+          "<i class=\"material-icons\">account_circle</i> <u>Entrar ou Registrar</u>";
         document
           .getElementById("loginStatus")
           .addEventListener("click", function () {

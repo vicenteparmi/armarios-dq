@@ -47,16 +47,20 @@
         cursor: pointer;
         position: absolute;
         right: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     #navButtonList {
         display: none;
         align-items: center;
+        font-size: large;
+        font-weight: bold;
     }
 
-    .hamburguer {
+    #menuButton {
         display: none;
-        cursor: pointer;
     }
 
     .active-header {
@@ -65,27 +69,42 @@
         border-bottom: 1px solid #000;
     }
 
+    .links li i {
+        display: none;
+    }
+
     /* Mobile nav bar */
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 845px) {
         .links {
             display: block;
             position: fixed;
             top: 0;
             left: 0;
-            width: 80vw;
+            width: 260px;
             height: 100vh;
             background-color: #fff;
             z-index: 1;
             transition: 0.5s;
             transform: translateX(-100%);
-            overflow-y: scroll;
-            padding-top: 60px;
+            padding: 80px 24px 24px 24px;
             margin: 0;
+            color: #000;
+            box-sizing: border-box;
+            border-right: solid 1px #000;
+            z-index: 1;
         }
 
-        li {
+        .links li {
             padding: 0;
-            margin: 5vw;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .links li i {
+            font-size: 24px;
+            display: block;
         }
 
         #loginStatus {
@@ -94,7 +113,16 @@
 
         .links.active {
             transform: translateX(0);
-            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        .links.active::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 260px;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
         }
 
         #navButtonList {
@@ -103,28 +131,66 @@
             left: 20px;
             display: flex;
         }
-        
-        .hamburguer {
-            display: block;
-            margin-right: 12px;
+
+        #menuButton {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-right: 24px;
         }
+
+        #pageTitle {
+            display: none;
+        }
+    }
+
+    /* Material icons */
+    .material-icons {
+        font-family: 'Material Icons';
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -webkit-font-smoothing: antialiased;
     }
 </style>
 <nav id="header">
     <div style="display: flex; align-items: center; margin-left: 3vw;">
         <!-- Menu button -->
-        <div id="menuButton" onclick="toggleMenu()"><img src="files/menu.png" class="hamburguer" alt="menu" width="24"></div>
+        <div id="menuButton" onclick="toggleMenu()">
+            <!-- Icon -->
+            <i class="material-icons">menu</i>
+        </div>
         <img src="files/Logo.png" alt="Logo do CAQuí" width="60px">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </div>
     <div id="pageTitle">Armários DQ</div>
     <ul class="links" id="links">
-        <div id="navButtonList" onclick="toggleMenu()"><img class="hamburguer" src="files/menu.png" alt="menu" width="24"> Armários DQ
+        <div id="navButtonList" onclick="toggleMenu()">
+            <i class="material-icons" style="margin-right: 24px;">menu</i>
+            Armários DQ
         </div>
-        <li id="hdInicio"><a href="index.html">Início</a></li>
-        <li id="hdManage"><a href="meuscontratos.html">Gerenciar Armários</a></li>
-        <li id="hdHelp"><a href="help.html">Como Reservar</a></li>
+        <li id="hdInicio">
+            <i class="material-icons">home</i>
+            <a href="index.html">Início</a>
+        </li>
+        <li id="hdManage"><i class="material-icons">assignment</i>
+            <a href="meuscontratos.html">Gerenciar Armários</a>
+        </li>
+        <li id="hdHelp"><i class="material-icons">help</i>
+            <a href="help.html">Como Reservar</a>
+        </li>
 
     </ul>
     <!-- Login with firebase -->
-    <span id="loginStatus"><u>Entrar ou Registrar</u></span>
+    <span id="loginStatus"><u>Entrar ou Registrar</u>
+        <!-- Icon -->
+        <i class="material-icons">account_circle</i>
+    </span>
 </nav>

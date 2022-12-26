@@ -221,9 +221,17 @@ const exampleEmail = document.getElementById("type-field3");
 
 var letter = 0;
 
-const namesExample = ["Centro Acadêmico de Química", "Vicente K. Parmigiani", "Arnold Sommerfeld"];
+const namesExample = [
+  "Centro Acadêmico de Química",
+  "Vicente K. Parmigiani",
+  "Arnold Sommerfeld",
+];
 const numbersExample = ["12", "321", "69"];
-const emailsExample = ["caqui.ufpr@gmail.com", "vicenteparmigiani@ufpr.br", "arnoldsommerfeld2023@gmail.com"];
+const emailsExample = [
+  "caqui.ufpr@gmail.com",
+  "vicenteparmigiani@ufpr.br",
+  "arnoldsommerfeld2023@gmail.com",
+];
 
 let nameExample = namesExample[0];
 let numberExample = numbersExample[0];
@@ -237,29 +245,36 @@ function typeWriter() {
     letter++;
     setTimeout(typeWriter, speed);
   } else if (letter < nameExample.length + numberExample.length) {
-    exampleNumber.innerHTML += numberExample.charAt(letter - nameExample.length);
+    exampleNumber.innerHTML += numberExample.charAt(
+      letter - nameExample.length
+    );
     letter++;
     setTimeout(typeWriter, speed);
-  } else if (letter < nameExample.length + numberExample.length + emailExample.length) {
-    exampleEmail.innerHTML += emailExample.charAt(letter - nameExample.length - numberExample.length);
+  } else if (
+    letter <
+    nameExample.length + numberExample.length + emailExample.length
+  ) {
+    exampleEmail.innerHTML += emailExample.charAt(
+      letter - nameExample.length - numberExample.length
+    );
     letter++;
     setTimeout(typeWriter, speed);
   } else {
     // Clear and reset animation delete
     if (exampleName.innerHTML.length > 0) {
       exampleName.innerHTML = exampleName.innerHTML.slice(0, -1);
-      setTimeout(typeWriter, speed/2);
+      setTimeout(typeWriter, speed / 2);
       return;
     } else if (exampleNumber.innerHTML.length > 0) {
       exampleNumber.innerHTML = exampleNumber.innerHTML.slice(0, -1);
-      setTimeout(typeWriter, speed/2);
+      setTimeout(typeWriter, speed / 2);
       return;
     } else if (exampleEmail.innerHTML.length > 0) {
       exampleEmail.innerHTML = exampleEmail.innerHTML.slice(0, -1);
-      setTimeout(typeWriter, speed/2);
+      setTimeout(typeWriter, speed / 2);
       return;
     }
-    
+
     // Reset animation
     letter = 0;
     setTimeout(typeWriter, 1000);
@@ -276,3 +291,33 @@ function typeWriter() {
 }
 
 typeWriter();
+
+// Get settings
+
+// Get prices from firebase realtime database
+var pricesRef = firebase.database().ref("settings/prices");
+pricesRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+
+  document.getElementById("price-year-regular").innerHTML = data.yearRegular;
+  document.getElementById("price-year-chem").innerHTML = data.yearChem;
+  document.getElementById("price-sem-regular").innerHTML = data.semRegular;
+  document.getElementById("price-sem-chem").innerHTML = data.semChem;
+
+  // Remove loading class from all .price elements
+  document.querySelectorAll(".price").forEach((price) => {
+    price.classList.remove("loading-price");
+  });
+});
+
+// Display warning if needed
+
+var warningRef = firebase.database().ref("settings/warning");
+warningRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+
+  if (data.display) {
+    document.getElementById("warning").innerHTML = data.content;
+    document.getElementById("warning").style.display = "block";
+  }
+});
