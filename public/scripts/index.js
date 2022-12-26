@@ -299,10 +299,10 @@ var pricesRef = firebase.database().ref("settings/prices");
 pricesRef.on("value", (snapshot) => {
   const data = snapshot.val();
 
-  document.getElementById("price-year-regular").innerHTML = data.yearRegular;
-  document.getElementById("price-year-chem").innerHTML = data.yearChem;
-  document.getElementById("price-sem-regular").innerHTML = data.semRegular;
-  document.getElementById("price-sem-chem").innerHTML = data.semChem;
+  document.getElementById("price-year-regular").innerHTML = "R$" + data.yearRegular;
+  document.getElementById("price-year-chem").innerHTML = "R$" + data.yearChem;
+  document.getElementById("price-sem-regular").innerHTML ="R$" +  data.semRegular;
+  document.getElementById("price-sem-chem").innerHTML = "R$" + data.semChem;
 
   // Remove loading class from all .price elements
   document.querySelectorAll(".price").forEach((price) => {

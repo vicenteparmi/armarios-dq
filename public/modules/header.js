@@ -11,7 +11,7 @@ initApp = function () {
         var phoneNumber = user.phoneNumber;
         var providerData = user.providerData;
         user.getIdToken().then(function (accessToken) {
-          document.getElementById("loginStatus").textContent =
+          document.getElementById("loginStatus").innerHTML =
             "<i class=\"material-icons\">account_circle</i> <spam>Olá, " + displayName + "!</spam>";
           document
             .getElementById("loginStatus")

@@ -144,8 +144,7 @@ body {
 }
 
 .locker-date {
-    position: relative;
-    bottom: -75px;
+    margin-top: 12px;
     text-align: center;
 }
 
