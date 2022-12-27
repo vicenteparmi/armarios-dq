@@ -36,6 +36,17 @@
 
     <div class="section-default">
 
+        <!-- Warning banner -->
+
+        <div class="warning-banner">
+            <h2>No momento não estamos fazendo novos contratos</h2>
+            <p>
+                Como estamos no processo de troca de gestão, ainda não estamos fazendo contratos de armários. <br>
+                <b>Todos os armários, mesmo que com contratos marcados como irregular, não serão arrombados ao menos até 31/01/2023.
+                </b> Até o final de Janeiro iremos repassar as datas para renovação e demais informações.
+            </p>
+        </div>
+
         <div class="column">
             <form id="newContractForm" class="column-self">
                 <div class="form-group">
@@ -83,7 +94,8 @@
                 <br>
                 <div class="buttons">
                     <button type="reset">Limpar</button>
-                    <button type="button" onclick="requestContract()">Solicitar contrato</button>
+                    <!-- <button type="button" onclick="requestContract()">Solicitar contrato</button> -->
+                    <button type="button" class="button-disabled" disabled>Solicitar contrato</button>
                 </div>
             </form>
 

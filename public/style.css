@@ -13,7 +13,7 @@ button {
     color: #fff;
     border: 1px solid var(--primary);
     padding: 8px;
-    border-radius: 42px;
+    border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     outline: none;
@@ -23,6 +23,16 @@ button:hover {
     background-color: #fff;
     color: var(--primary);
     border: solid 1px var(--primary);
+}
+
+button.button-disabled {
+    background-color: #ccc;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-weight: bold;
+    cursor: not-allowed;
+    outline: none;
 }
 
 a {

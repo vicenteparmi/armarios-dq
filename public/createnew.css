@@ -94,3 +94,14 @@ select {
         width: 90%;
     }
 }
+
+.warning-banner {
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: -32px;
+    margin-bottom: 24px;
+    border-radius: 16px;
+    border: 1px solid black;
+}
