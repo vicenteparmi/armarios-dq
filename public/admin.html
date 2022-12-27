@@ -30,166 +30,176 @@
 <body>
     <div w3-include-html="modules/header.html"></div>
 
-    <br>
-    <h1>Administração dos Armários</h1>
-    <p style="text-align: center; max-width: 400px; position: relative; transform: translateX(-50%); left: 50%;">Essa
-        página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login na
-        conta autorizada.</p>
-    <br><br>
-
-    <h2>Visualizar e modificar contratos</h2>
-    <p>Essa página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login na
-        conta autorizada.</p>
-
-    <div class="cards-holder">
-        <div class="card-blue" onclick="prepareTable()">Ver e editar<br>contratos</div>
-        <div class="card-blue" onclick="newContractModal()">Criar novo<br>contrato</div>
-        <div class="card-blue" onclick="filterContract()">Filtrar<br>visualização</div>
-    </div><br>
-
-    <h2>Estatísticas</h2>
-    <p>Resumos das informações dos armários.</p>
-
-    <div style="display: flex;">
-        <div id="info-summary">
-            <span id="big-number">...</span>
-            <p style="margin-top: 0; font-weight: 700;">Contratos ativos</p>
-            <ul style="list-style: none;">
-                <li>Regulares: <span id="cRegulares"></span></li>
-                <li>Irregulares: <span id="cIrregulares"></span></li>
-                <li>Aguardando pagamento: <span id="cAguaP"></span></li>
-                <li>Inutilizáveis: <span id="cInutilizavel"></span></li>
-            </ul>
-        </div>
+    <div class="section-title-default">
+        <h2>Administração dos Armários</h2>
+        <p style="color: white; max-width: none;">
+            Essa
+            página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login na
+            conta autorizada.
+        </p>
     </div>
 
-    <div overflow-x="auto" id="popup-table">
-        <div class="close" onclick="closeTable()">
-            &times;
-        </div>
-        <table id="table">
-            <colgroup>
-                <col span="1" style="width: 3%;">
-                <col span="1" style="width: 15%;">
-                <col span="1" style="width: 51%;">
-                <col span="1" style="width: 8%;">
-                <col span="1" style="width: 8%;">
-                <col span="1" style="width: 15%;">
-            </colgroup>
-            <tr>
-                <th>Número</th>
-                <th>Situação</th>
-                <th>Proprietário</th>
-                <th>Data do Contrato</th>
-                <th>Vencimento</th>
-                <th>Ações</th>
-            </tr>
-        </table>
-    </div>
+    <div class="section-default">
 
-    <!-- Edit contract popup -->
-    <div id="editContract" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Editar Contrato</h3>
-            <p><b>Número do Contrato:</b> <span id="contractNumber"></span><br>
-                <b>Nome:</b> <span id="infoName"></span><br>
-                <b>Telefone:</b> <span id="infoPhone"></span><br>
-                <b>Email:</b> <span id="infoEmail"></span><br>
-                <b>Curso:</b> <span id="infoCourse"></span><br>
-                <b>GRR:</b> <span id="infoGRR"></span><br>
-                <b>Método de Pagamento:</b> <span id="infoPay"></span><br>
-            </p>
-            <form id="editContractForm">
-                <input type="hidden" id="editContractId" name="id">
-                <div class="input-group">
-                    <label for="editContractDate">Data do Contrato</label>
-                    <input type="text" id="editContractDate" name="date" required>
-                </div>
-                <div class="input-group">
-                    <label for="editContractStatus">Situação</label>
-                    <select id="editContractStatus" name="status" required>
-                        <option value="Aguardando pagamento">Aguardando pagamento</option>
-                        <option value="Regular">Regular</option>
-                        <option value="Irregular">Irregular</option>
-                        <option value="Livre">Livre</option>
-                        <option value="Problema no cadastro">Problema no cadastro</option>
-                        <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
-                        <option value="Não utilizável">Não utilizável</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
-                    <button type="button" class="btn" onclick="saveEdit()">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <h2>Visualizar e modificar contratos</h2>
+        <p>Essa página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login
+            na
+            conta autorizada.</p>
 
-    <!-- New contract modal -->
-    <div id="newContract" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Novo Contrato</h3>
-            <p>Preencha com as <b>informações do contrato</b> ou <b>apenas com o número</b> no caso de armários Irregulares ou
-                Inutilizáveis.</p>
-            <form id="newContractForm">
-                <div class="input-group">
-                    <label for="newContractNumber">Número do Armário</label>
-                    <input type="text" id="newContractNumber" name="number" required>
+        <div class="cards-holder">
+            <div class="card-blue" onclick="prepareTable()">Ver e editar<br>contratos</div>
+            <div class="card-blue" onclick="newContractModal()">Criar novo<br>contrato</div>
+            <div class="card-blue" onclick="filterContract()">Filtrar<br>visualização</div>
+            <div class="card-blue" onclick="expireContracts()">Atualizar<br>contratos vencidos</div>
+        </div><br>
+
+        <h2>Estatísticas</h2>
+        <p>Resumos das informações dos armários.</p>
+
+        <div style="display: flex;">
+            <div id="info-summary">
+                <div>
+                    <span id="big-number">...</span>
+                    <p style="margin-top: 0; font-weight: 700;">Contratos ativos</p>
                 </div>
-                <div class="input-group">
-                    <label for="newContractName">Nome</label>
-                    <input type="text" id="newContractName" name="name" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractUID">UID</label>
-                    <input type="text" id="newContractUid" name="UID" required
-                        placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
-                </div>
-                <div class="input-group">
-                    <label for="newContractPhone">Telefone</label>
-                    <input type="text" id="newContractPhone" name="phone" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractEmail">Email</label>
-                    <input type="text" id="newContractEmail" name="email" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractCourse">Curso</label>
-                    <input type="text" id="newContractCourse" name="course" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractGRR">GRR</label>
-                    <input type="text" id="newContractGRR" name="grr" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractDate">Data do Contrato</label>
-                    <input type="text" id="newContractDate" name="date" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractPay">Método de pagamento</label>
-                    <input type="text" id="newContractPay" name="pay" required>
-                </div>
-                <div class="input-group">
-                    <label for="newContractStatus">Situação</label>
-                    <select id="newContractStatus" name="status" required>
-                        <option value="Aguardando pagamento">Aguardando pagamento</option>
-                        <option value="Regular">Regular</option>
-                        <option value="Irregular">Irregular</option>
-                        <option value="Livre">Livre</option>
-                        <option value="Problema no cadastro">Problema no cadastro</option>
-                        <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
-                        <option value="Não utilizável">Não utilizável</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
-                    <button type="button" class="btn" onclick="preContract(0)">Irregular</button>
-                    <button type="button" class="btn" onclick="preContract(1)">Inutilizável</button>
-                    <button type="button" onclick="saveNew()">Salvar</button>
-                </div>
-            </form>
+                <ul style="list-style: none;">
+                    <li>Regulares: <span id="cRegulares"></span></li>
+                    <li>Irregulares: <span id="cIrregulares"></span></li>
+                    <li>Aguardando pagamento: <span id="cAguaP"></span></li>
+                    <li>Inutilizáveis: <span id="cInutilizavel"></span></li>
+                </ul>
+            </div>
+        </div>
+
+        <div overflow-x="auto" id="popup-table">
+            <div class="close" onclick="closeTable()">
+                &times;
+            </div>
+            <table id="table">
+                <colgroup>
+                    <col span="1" style="width: 3%;">
+                    <col span="1" style="width: 15%;">
+                    <col span="1" style="width: 51%;">
+                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 8%;">
+                    <col span="1" style="width: 15%;">
+                </colgroup>
+                <tr>
+                    <th>Número</th>
+                    <th>Situação</th>
+                    <th>Proprietário</th>
+                    <th>Data do Contrato</th>
+                    <th>Vencimento</th>
+                    <th>Ações</th>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Edit contract popup -->
+        <div id="editContract" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Editar Contrato</h3>
+                <p><b>Número do Contrato:</b> <span id="contractNumber"></span><br>
+                    <b>Nome:</b> <span id="infoName"></span><br>
+                    <b>Telefone:</b> <span id="infoPhone"></span><br>
+                    <b>Email:</b> <span id="infoEmail"></span><br>
+                    <b>Curso:</b> <span id="infoCourse"></span><br>
+                    <b>GRR:</b> <span id="infoGRR"></span><br>
+                    <b>Método de Pagamento:</b> <span id="infoPay"></span><br>
+                </p>
+                <form id="editContractForm">
+                    <input type="hidden" id="editContractId" name="id">
+                    <div class="input-group">
+                        <label for="editContractDate">Data do Contrato</label>
+                        <input type="text" id="editContractDate" name="date" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="editContractStatus">Situação</label>
+                        <select id="editContractStatus" name="status" required>
+                            <option value="Aguardando pagamento">Aguardando pagamento</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Irregular">Irregular</option>
+                            <option value="Livre">Livre</option>
+                            <option value="Problema no cadastro">Problema no cadastro</option>
+                            <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                            <option value="Não utilizável">Não utilizável</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="btn" onclick="saveEdit()">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- New contract modal -->
+        <div id="newContract" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h3>Novo Contrato</h3>
+                <p>Preencha com as <b>informações do contrato</b> ou <b>apenas com o número</b> no caso de armários
+                    Irregulares ou
+                    Inutilizáveis.</p>
+                <form id="newContractForm">
+                    <div class="input-group">
+                        <label for="newContractNumber">Número do Armário</label>
+                        <input type="text" id="newContractNumber" name="number" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractName">Nome</label>
+                        <input type="text" id="newContractName" name="name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractUID">UID</label>
+                        <input type="text" id="newContractUid" name="UID" required
+                            placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractPhone">Telefone</label>
+                        <input type="text" id="newContractPhone" name="phone" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractEmail">Email</label>
+                        <input type="text" id="newContractEmail" name="email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractCourse">Curso</label>
+                        <input type="text" id="newContractCourse" name="course" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractGRR">GRR</label>
+                        <input type="text" id="newContractGRR" name="grr" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractDate">Data do Contrato</label>
+                        <input type="text" id="newContractDate" name="date" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractPay">Método de pagamento</label>
+                        <input type="text" id="newContractPay" name="pay" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="newContractStatus">Situação</label>
+                        <select id="newContractStatus" name="status" required>
+                            <option value="Aguardando pagamento">Aguardando pagamento</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Irregular">Irregular</option>
+                            <option value="Livre">Livre</option>
+                            <option value="Problema no cadastro">Problema no cadastro</option>
+                            <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                            <option value="Não utilizável">Não utilizável</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="btn" onclick="preContract(0)">Irregular</button>
+                        <button type="button" class="btn" onclick="preContract(1)">Inutilizável</button>
+                        <button type="button" onclick="saveNew()">Salvar</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
