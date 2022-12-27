@@ -45,7 +45,7 @@ window.addEventListener("load", function () {
     case "/index.html":
       document.getElementById("hdInicio").classList.add("active");
       break;
-    case "/meuscontratos.html":
+    case "/armarios.html":
       document.getElementById("hdManage").classList.add("active");
       break;
     case "/help.html":

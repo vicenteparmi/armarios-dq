@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus contratos | Armários DQ</title>
     <link rel="icon" type="image/png" href="/files/Logo.png">
-    <link href="https://fonts.googleapis.com/css?family=Muli:400,700&amp;display=swap&amp;subset=latin-ext"
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,700,900&amp;display=swap&amp;subset=latin-ext"
         rel="stylesheet">
 
     <!-- update the version number as needed -->
@@ -32,34 +32,20 @@
 
 
     <div class="section-title-default">
-        <h2>Contratos ativos</h2>
+        <h2>Todos os armários</h2>
+        <p style="color: white;">
+            Aqui você pode ver todos os armários do sistema e verificar a disponibilidade de cada um.
+            <br>
+            <button onclick="window.location.href = 'createnew.html';" class="button-title">
+                Fazer contrato
+            </button>
+        </p>
     </div>
 
     <div class="section-default">
-
-        <div style="overflow-x: auto;">
-            <table id="table">
-                <colgroup>
-                    <col span="1" style="width: 3%;">
-                    <col span="1" style="width: 15%;">
-                    <col span="1" style="width: 51%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
-                </colgroup>
-                <tr>
-                    <th>Número</th>
-                    <th>Situação</th>
-                    <th>Proprietário</th>
-                    <th>Data do Contrato</th>
-                    <th>Vencimento</th>
-                </tr>
-            </table>
+        <div id="lockers-container">
         </div>
         <div id="loading">Obtendo dados...</div>
-        <a href="createnew.html"><button
-                style="margin-top: 24px; transform: translateX(-50%); margin-left: 50%; z-index: -1; position: absolute;">Novo
-                Contrato</button></a>
-
     </div>
     
     <script defer src="modules/firebaseConfig.js"></script>

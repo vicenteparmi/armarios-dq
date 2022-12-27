@@ -1,99 +1,97 @@
 const db = firebase.firestore();
 const loading = document.getElementById("loading");
 
-// Find user in database
+let lockers = [];
 
-firebase.auth().onAuthStateChanged(function (user) {
-  if (user) {
-    // User is signed in.
-    var userId = user.uid;
-    const categoryDocRef = db.collection("users").doc(userId);
+// Load table
+function loadPage() {
+  const lockersRef = db.collection("armarios");
 
-    let username;
+  lockersRef.get().then((snapshot) => {
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      const id = doc.id;
+      const sit = data.situacao;
+      const color = data.color;
+      let special = 0;
 
-    db.collection("users").doc(userId).get().then((doc) => {
-      username = doc.data().nome;
-      loadContracts(categoryDocRef, username);
-    });
+      // Check if special locker
+      if (sit == "Irregular") {
+        special = 2;
+      }
 
-    loading.remove();
+      lockers.push({
+        id: id,
+        situation: sit,
+        color: color,
+        special: special
+      });
+    })
+  }).then(() => {
 
-  } else {
-    // No user is signed in.
-    var userId = null;
-    loading.innerHTML = "Não há usuário logado. Entre para visualizar seus contratos.";
-  }
-});
-
-// Load contracts from this user
-let contracts = [];
-
-function loadContracts(user, username) {
-
-  let curso = user.get();
-  console.log(curso);
-
-  const lockersRef = db
-    .collection("armarios")
-    .where("dono", "==", user)
-    .get()
-    .then((snapshot) => {
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const id = doc.id;
-        const date = new Date(data.date.seconds * 1000);
-        const owner = username;
-        const sit = data.situacao;
-
-        const expires = "31/12/" + date.getFullYear();
-
-        contracts.push({
-          id: id,
-          sit: sit,
-          owner: owner,
-          date: date.toLocaleDateString("pt-BR"),
-          expires: expires
+    // Fill missing lockers in array
+    for (let i = 0; i < 384; i++) {
+      let found = false;
+      for (let i2 = 0; i2 < lockers.length; i2++) {
+        if (lockers[i2].id == i + 1) {
+          found = true;
+        }
+      }
+      if (!found) {
+        lockers.push({
+          id: i + 1,
+          situation: "Livre",
+          color: "#008000",
+          special: 1
         });
-      });
+      }
+    }
 
-      // Sort contracts by number
-      contracts.sort((a, b) => {
-        return a.id - b.id;
-      });
+    document.getElementById("loading").style.display = "none";
+    const container = document.getElementById("lockers-container");
 
-      prepareTable();
+    // Sort lockers by id
+    lockers.sort((a, b) => {
+      return a.id - b.id;
     });
+
+    lockers.forEach((locker) => {
+      // Create locker
+      const lockerDiv = document.createElement("div");
+      lockerDiv.classList.add("locker");
+      lockerDiv.setAttribute("id", "locker"+locker.id);
+
+      // Create locker number
+      const lockerNumber = document.createElement("div");
+      lockerNumber.classList.add("locker-info");
+      lockerNumber.innerHTML = "<h3>" + locker.id + "</h3>";
+
+      // Create locker situation
+      const lockerSituation = document.createElement("div");
+      lockerSituation.classList.add("locker-status");
+      lockerSituation.innerHTML = "<p>" + locker.situation + "</p>";
+
+      // Set color to locker number
+      lockerNumber.style.color = locker.color;
+
+      // Check if special locker
+      if (locker.special == 1) {
+        // Free locker with light green background
+        lockerDiv.style.backgroundColor = "#90EE90";
+      } else if (locker.special == 2) {
+        // Irregular locker with light red background
+        lockerDiv.style.backgroundColor = "#FFB6C1";
+      }
+
+      // Append locker number and situation to locker
+      lockerDiv.appendChild(lockerNumber);
+      lockerDiv.appendChild(lockerSituation);
+
+      // Append locker to container
+      container.appendChild(lockerDiv);
+    });
+  });
 }
 
-function prepareTable() {
-  const table = document.getElementById("table");
-
-  for (let i = 0; i < contracts.length; i++) {
-    let content = contracts[i];
-    buildTable(content, table);
-  }
-}
-
-function buildTable(content, location) {
-  const row = document.createElement("tr");
-  const id = document.createElement("td");
-  const situation = document.createElement("td");
-  const date = document.createElement("td");
-  const owner = document.createElement("td");
-  const color = document.createElement("td");
-  const expires = document.createElement("td");
-
-  id.innerText = content.id;
-  situation.innerText = content.sit;
-  date.innerText = content.date;
-  owner.innerText = content.owner;
-  expires.innerText = content.expires;
-
-  row.appendChild(id);
-  row.appendChild(situation);
-  row.appendChild(owner);
-  row.appendChild(date);
-  row.appendChild(expires);
-
-  location.appendChild(row);
-}
+// Load page
+loadPage();
