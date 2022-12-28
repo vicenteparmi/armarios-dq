@@ -133,7 +133,7 @@ function loadContracts(user, username) {
         const owner = username;
         const sit = data.situacao;
         const color = data.color;
-        const expires = data.expires == undefined ? "..." : data.expires;
+        const expires = data.expires == undefined ? "..." : new Date(data.expires.seconds * 1000).toLocaleString("pt-BR");
 
         contracts.push({
           id: id,
@@ -321,3 +321,15 @@ warningRef.on("value", (snapshot) => {
     document.getElementById("warning").style.display = "block";
   }
 });
+
+firebase.firestore().getMetrics(['reads']).then(metrics => {
+  const readsMetric = metrics[0];
+  const readUsage = readsMetric.value.intValue;
+  const readLimit = readsMetric.limit.intValue;
+  if (readUsage > readLimit) {
+    console.log('Reading quota exceeded');
+  }
+});
+
+
+
