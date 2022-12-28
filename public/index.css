@@ -87,6 +87,8 @@ body {
     align-items: center;
     border: solid 1px black;
     animation: fade-up 0.3s ease-in-out;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
 }
 
 @keyframes fade-up {
@@ -419,6 +421,102 @@ body {
     100% {
         opacity: 1;
     }
+}
+
+/* Locker datailed info box */
+
+.locker-detailed-container {
+    height: 192px;
+    padding: 24px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: solid 1px black;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+    overflow: hidden;
+    width: 390px;
+    transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.unactive {
+    width: 132px;
+    padding: 0;
+    border: 1px solid transparent;
+}
+
+.active-locker {
+    position: relative;
+    transform: scale(0.8);
+    margin-top: -25px;
+    margin-left: -25px;
+}
+
+.locker-detailed {
+    position: relative;
+}
+
+.locker-detailed-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin: 0px;
+    margin-bottom: 8px;
+}
+
+.locker-detailed-info {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.locker-detailed-info p {
+    margin: 0px;
+    text-align: left;
+}
+
+.locker-datailed-info-sub {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.locker-datailed-info-main {
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.locker-detailed-buttons {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    bottom: 0px;
+    background-color: var(--secondary);
+    color: white;
+    border-radius: 12px;
+    border: solid 1px black;
+    box-sizing: border-box;
+}
+
+.locker-detailed-buttons button {
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0px;
+    border-radius: 12px;
+    padding: 8px 16px 8px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+.locker-detailed-buttons button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Mobile layout */

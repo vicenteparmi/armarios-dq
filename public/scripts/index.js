@@ -133,14 +133,17 @@ function loadContracts(user, username) {
         const owner = username;
         const sit = data.situacao;
         const color = data.color;
-        const expires = data.expires == undefined ? "..." : new Date(data.expires.seconds * 1000).toLocaleString("pt-BR");
+        const expires =
+          data.expires == undefined
+            ? "..."
+            : new Date(data.expires.seconds * 1000)
 
         contracts.push({
           id: id,
           sit: sit,
           owner: owner,
           date: date.toLocaleDateString("pt-BR"),
-          expires: expires,
+          expires: expires.toLocaleDateString("pt-BR"),
           color: color,
         });
       });
@@ -152,46 +155,96 @@ function loadContracts(user, username) {
 }
 
 function displayInfo(info) {
-  const name = document.getElementById("name");
-  const number = ni(document.getElementById("locker"));
-  const situation = document.getElementById("status");
-  const date = document.getElementById("date");
+  // const name = document.getElementById("name");
+  // const number = ni(document.getElementById("locker"));
+  // const situation = document.getElementById("status");
+  // const date = document.getElementById("date");
 
-  // Get contracts holder
-  const holder = document.getElementById("lockers-holder");
+  // // Get contracts holder
+  // const holder = document.getElementById("lockers-holder");
 
-  // Create divs
-  const locker = document.createElement("div");
-  const lockerNumber = document.createElement("div");
-  const lockerSituation = document.createElement("div");
-  const lockerDate = document.createElement("div");
+  // // Create divs
+  // const locker = document.createElement("div");
+  // const lockerNumber = document.createElement("div");
+  // const lockerSituation = document.createElement("div");
+  // const lockerDate = document.createElement("div");
 
-  // Add classes
-  locker.classList.add("locker");
-  lockerNumber.classList.add("locker-title");
-  lockerSituation.classList.add("locker-status");
-  lockerDate.classList.add("locker-date");
+  // // Add classes
+  // locker.classList.add("locker");
+  // lockerNumber.classList.add("locker-title");
+  // lockerSituation.classList.add("locker-status");
+  // lockerDate.classList.add("locker-date");
 
-  // Set color
-  lockerSituation.style.backgroundColor = info.color;
+  // // Set color
+  // lockerSituation.style.backgroundColor = info.color;
 
-  // Add content
-  lockerNumber.innerHTML = info.id;
-  lockerSituation.innerHTML = info.sit;
-  lockerDate.innerHTML =
-    "Validade<br/><b>" +
-    new Date(info.expires).toLocaleDateString("pt-BR") +
-    "</b>";
+  // // Add content
+  // lockerNumber.innerHTML = info.id;
+  // lockerSituation.innerHTML = info.sit;
+  // lockerDate.innerHTML =
+  //   "Validade<br/><b>" +
+  //   new Date(info.expires).toLocaleDateString("pt-BR") +
+  //   "</b>";
 
-  if (info.number == 69) {
-    lockerNumber.style.transform = "rotate(90deg)";
-  }
+  // if (info.number == 69) {
+  //   lockerNumber.style.transform = "rotate(90deg)";
+  // }
 
-  // Add to holder
-  locker.appendChild(lockerNumber);
-  locker.appendChild(lockerSituation);
-  locker.appendChild(lockerDate);
-  holder.appendChild(locker);
+  // // Add to holder
+  // locker.appendChild(lockerNumber);
+  // locker.appendChild(lockerSituation);
+  // locker.appendChild(lockerDate);
+  // holder.appendChild(locker);
+
+  let lockerHTML =
+    `
+  <div class="locker-detailed-container unactive">
+        <div class="locker" style="cursor: pointer" onclick="toggleDetailed(this)" id="locker` +
+    info.id +
+    `">
+          <h2 class="locker-title">` +
+    info.id +
+    `</h2>
+          <div class="locker-status" style="background-color: ` +
+    info.color +
+    `">
+            ` +
+    info.sit +
+    `
+          </div>
+        </div>
+        <div class="locker-detailed">
+          <h2 class="locker-detailed-title">Armário ` +
+    info.id +
+    `</h2>
+          <div class="locker-detailed-info">
+            <div>
+              <p class="locker-datailed-info-sub">Data do contrato</p>
+              <p class="locker-datailed-info-main">` +
+    info.date +
+    `</p>
+            </div>
+            <div>
+              <p class="locker-datailed-info-sub">Validade</p>
+              <p class="locker-datailed-info-main">` +
+    info.expires +
+    `</p>
+            </div>
+          </div>
+          <div class="locker-detailed-buttons">
+            <button class="locker-detailed-button">
+              <i class="material-symbols-outlined">source_notes</i>
+              Renovar
+            </button>
+            <button class="locker-detailed-button">
+              <i class="material-symbols-outlined">autorenew</i>
+              Trocar
+            </button>
+          </div>
+        </div>
+      </div>`;
+
+  document.getElementById("lockers-holder").innerHTML += lockerHTML;
 }
 
 // Format number
@@ -299,9 +352,11 @@ var pricesRef = firebase.database().ref("settings/prices");
 pricesRef.on("value", (snapshot) => {
   const data = snapshot.val();
 
-  document.getElementById("price-year-regular").innerHTML = "R$" + data.yearRegular;
+  document.getElementById("price-year-regular").innerHTML =
+    "R$" + data.yearRegular;
   document.getElementById("price-year-chem").innerHTML = "R$" + data.yearChem;
-  document.getElementById("price-sem-regular").innerHTML ="R$" +  data.semRegular;
+  document.getElementById("price-sem-regular").innerHTML =
+    "R$" + data.semRegular;
   document.getElementById("price-sem-chem").innerHTML = "R$" + data.semChem;
 
   // Remove loading class from all .price elements
@@ -322,14 +377,11 @@ warningRef.on("value", (snapshot) => {
   }
 });
 
-firebase.firestore().getMetrics(['reads']).then(metrics => {
-  const readsMetric = metrics[0];
-  const readUsage = readsMetric.value.intValue;
-  const readLimit = readsMetric.limit.intValue;
-  if (readUsage > readLimit) {
-    console.log('Reading quota exceeded');
-  }
-});
+// Show detailed info on locker click
 
+function toggleDetailed(thisLocker) {
+  thisLocker.classList.toggle("active-locker");
 
-
+  // Toggle the div that is is contained in
+  thisLocker.parentElement.classList.toggle("unactive");
+}
