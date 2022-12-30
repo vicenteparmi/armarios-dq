@@ -54,3 +54,49 @@
     border: 1px solid #ff0000;
     color: #fff;
 }
+
+.modal-body .info-data {
+    margin-bottom: 0;
+    padding: 0;
+    border: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body .info-data input {
+    padding: 8px;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    font-weight: 400;
+}
+
+.modal-body .info-data input:focus {
+    outline: none;
+    border: 1px solid var(--primary);
+}
+
+.modal-body .info-data input::placeholder {
+    font-weight: 400;
+}
+
+.modal-body .info-data select {
+    padding: 8px;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.modal-body .info-data select:focus {
+    outline: none;
+    border: 1px solid var(--primary);
+}
+
+.modal-body .info-data select::placeholder {
+    font-weight: 400;
+}
+
+.modal-body .info-data span {
+    font-size: 12px;
+    margin-bottom: 8px;
+}

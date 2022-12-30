@@ -57,6 +57,78 @@ a {
     color: #fff;
 }
 
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal-closed {
+    display: none;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0px;
+}
+
+.modal-header .close {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0px;
+    cursor: pointer;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.validation-error {
+    color: #ff0000;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    animation: error 0.5s;
+}
+
+@keyframes error {
+    0% {
+        transform: translateX(0px);
+    }
+    50% {
+        transform: translateX(10px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
+}
+
 /* Material icons */
 
 .material-symbols-outlined {

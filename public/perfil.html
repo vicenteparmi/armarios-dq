@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Armários DQ</title>
+    <title>Perfil | Armários DQ</title>
     <link rel="icon" type="image/png" href="/files/Logo.png">
     <link href="https://fonts.googleapis.com/css?family=Muli:400,700,900&amp;display=swap&amp;subset=latin-ext"
         rel="stylesheet">
@@ -21,6 +21,8 @@
     <script defer src="/__/firebase/9.6.7/firebase-firestore-compat.js"></script>
     <script defer src="/__/firebase/9.6.7/firebase-analytics-compat.js"></script>
 
+    <script src="scripts/profile.js"></script>
+
 </head>
 
 <body>
@@ -34,34 +36,76 @@
     <div class="section-default info">
         <!-- Name -->
         <div class="button-container">
-            <h1 id="name" class="info-title">Vicente Parmigiani</h1>
-            <button class="button-default" id="edit">Alterar dados</button>
+            <h1 id="name" class="info-title">Carregando...</h1>
+            <button class="button-default" onclick="toggleModal()">Alterar dados</button>
         </div>
-        <p class="info-data">Email: <span id="email">vicenteparmigiani@gmail.com</span></p>
-        <p class="info-data">Telefone: <span id="phone">+55 11 99999-9999</span></p>
-        <p class="info-data">GRR: <span id="grr">GRR20196908</span></p>
-        <p class="info-data">Curso: <span id="course">Química (12B)</span></p>
+        <p class="info-data">Email: <span id="email"></span></p>
+        <p class="info-data">Telefone: <span id="phone"></span></p>
+        <p class="info-data">GRR: <span id="grr"></span></p>
+        <p class="info-data">Curso: <span id="course"></span></p>
 
         <!-- Ações da conta -->
         <h2>Ações da conta</h2>
         <div class="button-container">
-            <button class="button-default" id="logout">Sair</button>
-            <button class="button-default" id="reset">Redefinir senha</button>
-            <button class="button-default danger" id="delete">Excluir conta</button>
+            <button class="button-default" onclick="logout()">Sair</button>
+            <button class="button-default danger" onclick="deleteAccount()">Excluir conta</button>
         </div>
-        <p> Ao excluir sua conta, todos os seus dados serão apagados do nosso banco de dados, inclusive os armários que
-            você pertence. Essa ação é irreversível e está aqui apenas para ser utilizada após não possuir mais nenhum
-            armário ou caso queira o abandonar.</p>
+        <p> Ao excluir sua conta, todos os seus dados serão apagados do nosso banco de dados, inclusive os armários
+            pertencentes a você. Essa ação é irreversível e está aqui apenas para ser utilizada após não possuir mais
+            nenhum armário ou caso queira abandonar os seus.</p>
 
         <!-- Armários -->
         <h2>Armários</h2>
         <p>Encontre seus armários na página inicial. A partir dali você pode renovar o contrato ou alterar o número.</p>
-    </div>
 
-    <script defer src="modules/firebaseConfig.js"></script>
-    <script src="modules/includeHTML.js"></script>
-    <script src="modules/header.js"></script>
-    <script src="scripts/profile.js"></script>
+        <!-- Modal to edit info -->
+        <div class="modal modal-closed" id="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Editar informações</h2>
+                    <span class="close" onclick="toggleModal()">&times;</span>
+                </div>
+                <div class="modal-body info">
+                    <p class="info-data">Nome:
+                        <input type="text" id="name-input" placeholder="Arnold Sommerfeld" required>
+                    </p>
+                    <p class="info-data">Email:
+                        <input type="email" id="email-input" placeholder="exemplo@ufpr.br" required> <span
+                            class="validation-error" id="email-error"></span>
+                    </p>
+                    <p class="info-data">Telefone:
+                        <input type="tel" id="phone-input" placeholder="41 99999-9999" required>
+                        <span class="validation-error" id="phone-error"></span>
+                    </p>
+                    <p class="info-data">GRR:
+                        <span>Caso não possua GRR digite "00000000"</span>
+                        <input type="text" id="grr-input" placeholder="20220000" required>
+                        <span class="validation-error" id="grr-error"></span>
+                    </p>
+                    <p class="info-data">Curso:
+                        <select name="course-input" id="course-input" required>
+                            <option value="12B">Química Bacharelado (12B)</option>
+                            <option value="12E">Química Licenciatura Diurno (12D)</option>
+                            <option value="104A">Química Licenciatura Noturno (104A)</option>
+                            <option value="12E">Química Licenciatura + Bacharelado (12E)</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                        <input type="text" id="course-input-other" placeholder="Digite o seu curso"
+                            style="display: none;">
+                    </p>
+                    <!-- Buttons -->
+                    <div class="button-container">
+                        <button class="button-default" onclick="update()">Salvar</button>
+                        <button class="button-default" onclick="toggleModal()">Cancelar</button>
+                    </div>
+                </div>
+
+                <script defer src="modules/firebaseConfig.js"></script>
+                <script src="modules/includeHTML.js"></script>
+                <script src="modules/header.js"></script>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
