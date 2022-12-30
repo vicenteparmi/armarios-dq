@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Armários DQ</title>
+    <link rel="icon" type="image/png" href="/files/Logo.png">
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,700,900&amp;display=swap&amp;subset=latin-ext"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="perfil.css">
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.6.7/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/9.6.7/firebase-analytics-compat.js"></script>
+
+</head>
+
+<body>
+    <div w3-include-html="modules/header.html"></div>
+
+    <div class="section-title-default">
+        <h2>Perfil</h2>
+        <p style="color: white;">Suas informações para que possamos entrar em contato se necessário.</p>
+    </div>
+
+    <div class="section-default info">
+        <!-- Name -->
+        <div class="button-container">
+            <h1 id="name" class="info-title">Vicente Parmigiani</h1>
+            <button class="button-default" id="edit">Alterar dados</button>
+        </div>
+        <p class="info-data">Email: <span id="email">vicenteparmigiani@gmail.com</span></p>
+        <p class="info-data">Telefone: <span id="phone">+55 11 99999-9999</span></p>
+        <p class="info-data">GRR: <span id="grr">GRR20196908</span></p>
+        <p class="info-data">Curso: <span id="course">Química (12B)</span></p>
+
+        <!-- Ações da conta -->
+        <h2>Ações da conta</h2>
+        <div class="button-container">
+            <button class="button-default" id="logout">Sair</button>
+            <button class="button-default" id="reset">Redefinir senha</button>
+            <button class="button-default danger" id="delete">Excluir conta</button>
+        </div>
+        <p> Ao excluir sua conta, todos os seus dados serão apagados do nosso banco de dados, inclusive os armários que
+            você pertence. Essa ação é irreversível e está aqui apenas para ser utilizada após não possuir mais nenhum
+            armário ou caso queira o abandonar.</p>
+
+        <!-- Armários -->
+        <h2>Armários</h2>
+        <p>Encontre seus armários na página inicial. A partir dali você pode renovar o contrato ou alterar o número.</p>
+    </div>
+
+    <script defer src="modules/firebaseConfig.js"></script>
+    <script src="modules/includeHTML.js"></script>
+    <script src="modules/header.js"></script>
+    <script src="scripts/profile.js"></script>
+</body>
+
+</html>

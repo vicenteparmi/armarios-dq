@@ -244,7 +244,10 @@ function displayInfo(info) {
         </div>
       </div>`;
 
-  document.getElementById("lockers-holder").innerHTML += lockerHTML;
+
+  // Append as the first child
+  document.getElementById("lockers-holder").insertAdjacentHTML("afterbegin", lockerHTML);
+
 }
 
 // Format number
