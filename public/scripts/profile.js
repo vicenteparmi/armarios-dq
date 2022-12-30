@@ -151,6 +151,8 @@ function validation() {
     } else {
       document.getElementById("course-error").style.display = "none";
     }
+  } else {
+    document.getElementById("course-error").style.display = "none";
   }
 
   return status;
@@ -197,6 +199,7 @@ function update() {
 
   // Run validation
   if (!validation()) {
+    alert("Por favor, corrija os erros e preencha todos os campos.");
     return;
   }
 
