@@ -91,6 +91,8 @@ function toggleModal() {
 }
 
 function validation() {
+  let status = true;
+
   // Email validation
   var email = document.getElementById("email-input").value;
   var emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
@@ -100,6 +102,7 @@ function validation() {
     document.getElementById("email-error").style.display = "block";
     document.getElementById("email-error").innerHTML =
       "Endereço de e-mail inválido";
+    status = false;
   }
 
   // Phone validation (11999999999 or 11 99999-9999)
@@ -111,6 +114,7 @@ function validation() {
     document.getElementById("phone-error").style.display = "block";
     document.getElementById("phone-error").innerHTML =
       "Número de telefone inválido. Exemplo: 11 99999-9999";
+    status = false;
   }
 
   // GRR validation
@@ -123,6 +127,7 @@ function validation() {
     document.getElementById("grr-error").style.display = "block";
     document.getElementById("grr-error").innerHTML =
       "GRR inválido. Exemplo: 20220000";
+    status = false;
   }
 
   // Hide error message of the empty fields
@@ -135,6 +140,20 @@ function validation() {
   if (grr == "") {
     document.getElementById("grr-error").style.display = "none";
   }
+
+  // Is other is selected, check if the field is empty
+  if (document.getElementById("course-input").value == "outro") {
+    if (document.getElementById("course-input-other").value == "") {
+      document.getElementById("course-error").style.display = "block";
+      document.getElementById("course-error").innerHTML =
+        "Por favor, digite o nome do seu curso";
+      status = false;
+    } else {
+      document.getElementById("course-error").style.display = "none";
+    }
+  }
+
+  return status;
 }
 
 // Logout firebase
@@ -175,6 +194,12 @@ function deleteAccount() {
 
 // Update user data
 function update() {
+
+  // Run validation
+  if (!validation()) {
+    return;
+  }
+
   // Get user data from modal
   var name = document.getElementById("name-input").value;
   var email = document.getElementById("email-input").value;
@@ -182,6 +207,12 @@ function update() {
   var grr = document.getElementById("grr-input").value;
   var courseType = document.getElementById("course-input").value;
   var courseOther = document.getElementById("course-input-other").value;
+
+  // Check if there are empty fields
+  if (name == "" || email == "" || phone == "" || grr == "") {
+    alert("Por favor, preencha todos os campos.");
+    return;
+  }
 
   // ISet the name of the course to the value of the input
   const courses = {
