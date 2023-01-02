@@ -42,125 +42,308 @@
             <h2>No momento não estamos fazendo novos contratos</h2>
             <p>
                 Como estamos no processo de troca de gestão, ainda não estamos fazendo contratos de armários. <br>
-                <b>Todos os armários, mesmo que com contratos marcados como irregular, não serão arrombados ao menos até 31/01/2023.
+                <b>Todos os armários, mesmo que com contratos marcados como irregular, não serão arrombados ao menos até
+                    31/01/2023.
                 </b> Até o final de Janeiro iremos repassar as datas para renovação e demais informações.
             </p>
         </div>
 
-        <div class="column">
-            <form id="newContractForm" class="column-self">
-                <div class="form-group">
-                    <label for="newContractName">Nome completo</label>
-                    <input type="text" name="newContractName" id="newContractName" placeholder="Proprietário" required>
-                </div>
-                <div class="form-group">
-                    <label for="newContractNumber">Número do Armário</label>
-                    <input type="number" id="newContractNumber" name="newContractNumber" min="1" max="348" required>
-                </div>
-                <div class="form-group">
-                    <label for="newContractType">Curso</label>
-                    <select id="newContractType" name="newContractType" required>
-                        <option value="Química">Química</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                    <input style="display: none;" type="text" name="newContractOther" id="newContractOther"
-                        placeholder="Escreva o seu curso">
-                </div>
-                <div class="form-group">
-                    <label for="newContractGRR">GRR</label>
-                    <input type="number" id="newContractGRR" name="newContractGRR" required
-                        placeholder="Exemplo: 20221234">
-                </div>
-                <div class="form-group">
-                    <label for="newContractEmail">Email</label>
-                    <input type="email" name="newContractEmail" id="newContractEmail" placeholder="exemplo@email.com"
-                        required>
-                </div>
-                <div class="form-group">
-                    <label for="newContractPhone">Telefone</label>
-                    <input type="tel" name="newContractPhone" id="newContractPhone" placeholder="(00) 00000-0000"
-                        required>
-                </div>
-                <div class="form-group">
-                    <label for="newContractPaymentMethod">Forma de Pagamento</label>
-                    <select name="newContractPaymentMethod" id="newContractPaymentMethod" required>
-                        <option value="">Selecione</option>
-                        <option value="Dinheiro">Dinheiro</option>
-                        <option value="Cartão (Crédito)">Cartão de Crédito</option>
-                        <option value="Cartão (Débito)">Cartão de Débito</option>
-                        <option value="PIX">PIX</option>
-                    </select>
-                </div>
-                <br>
-                <div class="buttons">
-                    <button type="reset">Limpar</button>
-                    <!-- <button type="button" onclick="requestContract()">Solicitar contrato</button> -->
-                    <button type="button" class="button-disabled" disabled>Solicitar contrato</button>
-                </div>
-            </form>
+        <div class="body-contract">
+            <!-- Informações -->
 
-            <div class="column-self">
-                <h3>Informações do contrato:</h3>
+            <h2>1. Informações do contratante</h2>
+            <p id="userData">
+                <b>Nome completo:</b> <span></span><br>
+                <b>Curso:</b> <span></span><br>
+                <b>GRR:</b> <span></span><br>
+                <b>Email:</b> <span></span><br>
+                <b>Telefone:</b> <span></span><br>
+            </p>
+            <p>Todas as informações acima são as que constam no nosso banco de dados. Caso alguma esteja incorreta,
+                clique no botão abaixo para alterar. Os dados são necessários para que possamos entrar em contato com
+                você se preciso.</p>
+            <!-- Redirect to profile -->
+            <button class="button-default" onclick="window.location.href = '/perfil.html';">
+                Alterar informações
+            </button>
+
+            <!-- Contrato -->
+
+            <h2>2. Contrato</h2>
+            <p>Ao solicitar este documento, concorda-se com:
+            <ul>
+                <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa) dias a partir
+                    do
+                    último dia letivo do ano, sob o risco de arrombamento;</li>
+                <li>Em caso de arrombamento os pertences serão guardados no CAQuí por até 30 (trinta) dias;
+                <li>Não colocar adesivos dentro ou fora dos armários;</li>
+                <li>Não avariar o armário;</li>
+                <li>Não guardar drogas ilícitas e álcool;</li>
+                <li>Em caso de denúncia, o armário poderá ser arrombado para comprovação, caso a denúncia seja
+                    inválida
+                    o Centro Acadêmico de Química (CAQuí) se responsabilizará pela compra de um novo cadeado;</li>
+                <li>Não guardar itens de valor nos armários; a responsabilidade será inteiramente do contratante.
+                    Irregularidades implicarão na perda do serviço.</li>
+            </ul>
+            </p>
+            <p class="agree">
+                <input type="checkbox" name="agree" id="agree">
+                <label for="agree">Concordo com os termos acima.</label>
+            </p>
+            <p class="error" style="display: none;" id="agree-error">Você precisa concordar com os termos acima.</p>
+
+            <!-- Armário -->
+
+            <h2>3. Armário</h2>
+            <p>Armários marcados como irregular podem ser renovados, ou é possível selecionar um novo.</p>
+            <div class="lockers-holder" id="lockers-holder">
+                <div class="locker locker-new locker-selected" onclick="selectLocker(this, 'new')">
+                    <div class="locker-number">
+                        <input type="number" name="newLockerNumber" id="newLockerNumber" min="1" max="348"
+                            placeholder="NI" onblur="validateLockerNumber()">
+                    </div>
+                    Alugar novo armário
+                </div>
+            </div>
+            <p class="error" style="display: none;" id="locker-select-error">Armário não disponível. O armário pode
+                estar ocupado ou não existir.</p>
+
+            <!-- Plano -->
+
+            <h2>4. Duração</h2>
+            <p>Escolha o plano de duração do contrato.</p>
+
+            <div class="plans-holder" onclick="changeDuration()">
+                <input type="radio" name="plan" id="plan-1" value="1" checked>
+                <label for="plan-1">
+                    <div class="plans">
+                        <div class="plan-name">
+                            <h3>Anual</h3>
+                            <span>12 meses</span>
+                        </div>
+                        <div class="plan-price">
+                            Valor<br>
+                            <span id="price-1">R$ --,--</span>/ano
+                        </div>
+                    </div>
+                </label>
+                <input type="radio" name="plan" id="plan-2" value="2">
+                <label for="plan-2">
+                    <div class="plans">
+                        <div class="plan-name">
+                            <h3>Semestral</h3>
+                            <span>6 meses</span>
+                        </div>
+                        <div class="plan-price">
+                            Valor<br>
+                            <span id="price-2">R$ --,--</span>/semestre
+                        </div>
+                    </div>
+                </label>
+            </div>
+            <p class="error" style="display: none;" id="payment-warning">
+                Atenção: os valores presentes nessa página são referentes a armários para estudantes dos cursos de
+                Química 12B, 12A, 12E e 104A, da UFPR. Caso você não seja um desses estudantes, o valor do armário
+                será diferente. Atualize suas informações no sistema para que o valor seja atualizado.
+                Caso os membros do CAQuí considerem necessário, poderão realizar a solicitação do comprovante de
+                matrícula para comprovação de vínculo com o curso.
+            </p>
+            <br>
+            <div class="subsection">
+                <h3>Duração do contrato</h3>
+                <p>De <span id="start-date">--/--/20--</span> a <span id="end-date">--/--/20--</span></p>
+            </div>
+
+            <!-- Informações para o pagamento -->
+            <h2>5. Pagamento</h2>
+
+            <div class="subsection">
+                <p>Escolha a forma de pagamento.</p>
+                <select name="payment" id="payment">
+                    <option value="1">PIX</option>
+                    <option value="2">Dinheiro</option>
+                </select>
+            </div>
+
+            <div id="payment-instructions-PIX">
                 <p>
-                    <b>Data de início:</b> a partir da confirmação do pagamento.<br>
-                    <b>Data de término:</b> último dia letivo de 2022.<br>
-                    <b>Valor:</b> <span id="price">Preencha o formulário primeiro.</span><br>
+                    Conforme o método selecionado (PIX), o pagamento deverá ser feito da seguinte maneira:
+                <ol>
+                    <li>Envie o <b>valor do armário</b> para a chave PIX <a
+                            href="mailto:caqui.ufpr@gmail.com">caqui.ufpr@gmail.com</a>, que está em nome de Rafael
+                        Zamboni.
+                    </li>
+                    <li>Envie o <b>comprovante de pagamento</b> para o e-mail <a
+                            href="mailto:caqui.ufpr+armario@gmail.com">caqui.ufpr+armario@gmail.com</a>.</li>
+                    <li>Após o recebimento do comprovante, o <b>CAQuí irá confirmar o pagamento</b> em um período de 7
+                        dias
+                        após a
+                        realização do contrato, e irá atualizar o status de "Aguardando pagamento" para "Regular".</li>
+                </ol>
+                Você tem um prazo de 7 dias para realizar o pagamento, após a data de início do contrato. <b>Caso o
+                    pagamento não seja realizado nesse prazo, o contrato será cancelado</b>.
                 </p>
-                <p>Ao solicitar este documento, concorda-se com:
-                <ul>
-                    <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa) dias a partir
-                        do
-                        último dia letivo do ano, sob o risco de arrombamento;</li>
-                    <li>Em caso de arrombamento os pertences serão guardados no CAQuí por até 30 (trinta) dias;
-                    <li>Não colocar adesivos dentro ou fora dos armários;</li>
-                    <li>Não avariar o armário;</li>
-                    <li>Não guardar drogas ilícitas e álcool;</li>
-                    <li>Em caso de denúncia, o armário poderá ser arrombado para comprovação, caso a denúncia seja
-                        inválida
-                        o Centro Acadêmico de Química (CAQuí) se responsabilizará pela compra de um novo cadeado;</li>
-                    <li>Não guardar itens de valor nos armários; a responsabilidade será inteiramente do contratante.
-                        Irregularidades implicarão na perda do serviço.</li>
-                </ul>
+            </div>
+            <div id="payment-instructions-dinheiro" style="display: none;">
+                <p>
+                    Conforme o método selecionado (dinheiro), o pagamento deverá ser feito da seguinte maneira:
+                <ol>
+                    <li>Realize o pagamento do <b>valor do armário</b> para um dos membros do CAQuí no Centro Acadêmico.
+                        Caso não encontre ninguém por lá, entre em contato através de nossas redes sociais para
+                        marcarmos um
+                        horário para o pagamento</li>
+                    <li>Envie o <b>comprovante de pagamento</b> entregue na hora do pagamento para o e-mail <a
+                            href="mailto:caqui.ufpr+armario@gmail.com"> caqui.ufpr+armario@gmail.com</a>.
+                    </li>
+                    <li>Após o recebimento do comprovante, o <b>CAQuí irá confirmar o pagamento</b> em um período de 7
+                        dias
+                        após a realização do contrato, e irá atualizar o status de "Aguardando pagamento" para
+                        "Regular".
+                    </li>
+                </ol>
+                Você tem um prazo de 7 dias para realizar o pagamento, após a data de início do contrato. <b>Caso o
+                    pagamento não seja realizado nesse prazo, o contrato será cancelado</b>.
                 </p>
+            </div>
+            <!-- Resumo -->
+
+            <h2>6. Resumo</h2>
+            <p>Confira as informações do contrato antes de finalizar.</p>
+            <div class="subsection summary">
+                <h3>Informações do contrato</h3>
+                <p>Nome: <span id="contract-name"></span></p>
+                <p>Número do armário: <span id="contract-number"><i style="color: red;">Selecione</i></span></p>
+                <p>Curso: <span id="contract-course"></span></p>
+                <p>Duração: <span id="contract-duration">Anual</span></p>
+                <p>Valor: <span id="contract-price"></span></p>
+                <p>Forma de pagamento: <span id="contract-payment">PIX</span></p>
+            </div>
+
+            <!-- Button to submit -->
+            <br>
+            <button id="submit-button" onclick="makeContract()">Solicitar contrato</button>
+
+            <!-- <div class=" column">
+                        <form id="newContractForm" class="column-self">
+                            <div class="form-group">
+                                <label for="newContractName">Nome completo</label>
+                                <input type="text" name="newContractName" id="newContractName"
+                                    placeholder="Proprietário" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractNumber">Número do Armário</label>
+                                <input type="number" id="newContractNumber" name="newContractNumber" min="1" max="348"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractType">Curso</label>
+                                <select id="newContractType" name="newContractType" required>
+                                    <option value="Química">Química</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                                <input style="display: none;" type="text" name="newContractOther" id="newContractOther"
+                                    placeholder="Escreva o seu curso">
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractGRR">GRR</label>
+                                <input type="number" id="newContractGRR" name="newContractGRR" required
+                                    placeholder="Exemplo: 20221234">
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractEmail">Email</label>
+                                <input type="email" name="newContractEmail" id="newContractEmail"
+                                    placeholder="exemplo@email.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractPhone">Telefone</label>
+                                <input type="tel" name="newContractPhone" id="newContractPhone"
+                                    placeholder="(00) 00000-0000" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newContractPaymentMethod">Forma de Pagamento</label>
+                                <select name="newContractPaymentMethod" id="newContractPaymentMethod" required>
+                                    <option value="">Selecione</option>
+                                    <option value="Dinheiro">Dinheiro</option>
+                                    <option value="Cartão (Crédito)">Cartão de Crédito</option>
+                                    <option value="Cartão (Débito)">Cartão de Débito</option>
+                                    <option value="PIX">PIX</option>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="buttons">
+                                <button type="reset">Limpar</button>
+                                <button type="button" onclick="requestContract()">Solicitar contrato</button>
+                                <button type="button" class="button-disabled" disabled>Solicitar contrato</button>
+                            </div>
+                        </form>
+
+                        <div class="column-self">
+                            <h3>Informações do contrato:</h3>
+                            <p>
+                                <b>Data de início:</b> a partir da confirmação do pagamento.<br>
+                                <b>Data de término:</b> último dia letivo de 2022.<br>
+                                <b>Valor:</b> <span id="price">Preencha o formulário primeiro.</span><br>
+                            </p>
+                            <p>Ao solicitar este documento, concorda-se com:
+                            <ul>
+                                <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa)
+                                    dias a partir
+                                    do
+                                    último dia letivo do ano, sob o risco de arrombamento;</li>
+                                <li>Em caso de arrombamento os pertences serão guardados no CAQuí por até 30 (trinta)
+                                    dias;
+                                <li>Não colocar adesivos dentro ou fora dos armários;</li>
+                                <li>Não avariar o armário;</li>
+                                <li>Não guardar drogas ilícitas e álcool;</li>
+                                <li>Em caso de denúncia, o armário poderá ser arrombado para comprovação, caso a
+                                    denúncia seja
+                                    inválida
+                                    o Centro Acadêmico de Química (CAQuí) se responsabilizará pela compra de um novo
+                                    cadeado;</li>
+                                <li>Não guardar itens de valor nos armários; a responsabilidade será inteiramente do
+                                    contratante.
+                                    Irregularidades implicarão na perda do serviço.</li>
+                            </ul>
+                            </p>
+                        </div>
+        </div> -->
+
+        </div>
+
+        <!-- Summarize the contract and confirm modal: -->
+        <div id="summarizeModal" class="modal">
+            <div class="modal-content">
+                <h3>Confirmar contrato</h3>
+                <p>
+                    <b>Nome:</b> <span id="sumName"></span><br>
+                    <b>Número do Armário:</b> <span id="sumNumber"></span><br>
+                    <b>Curso:</b> <span id="sumType"></span><br>
+                    <b>GRR:</b> <span id="sumGRR"></span><br>
+                    <b>Email:</b> <span id="sumEmail"></span><br>
+                    <b>Telefone:</b> <span id="sumPhone"></span><br>
+                    <b>Forma de Pagamento:</b> <span id="sumPaymentMethod"></span><br>
+                </p>
+                <p>
+                    <b>Valor:</b> R$ <span id="sumPrice"></span>,00<br>
+                </p>
+                <p>
+                    <b>Data de início:</b> <span id="sumStartDate"></span><br>
+                    <b>Data de término:</b> <span id="sumEndDate"></span><br>
+                </p>
+                <p>
+                    <b>Observações:</b> <span id="sumObservations"></span><br>
+                </p>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="cancelContract()">Cancelar contrato</button>
+                    <button type="button" class="btn btn-success" onclick="sendContract()">Confirmar contrato</button>
+                </div>
             </div>
         </div>
 
-    </div>
-
-    <!-- Summarize the contract and confirm modal: -->
-    <div id="summarizeModal" class="modal">
-        <div class="modal-content">
-            <h3>Confirmar contrato</h3>
-            <p>
-                <b>Nome:</b> <span id="sumName"></span><br>
-                <b>Número do Armário:</b> <span id="sumNumber"></span><br>
-                <b>Curso:</b> <span id="sumType"></span><br>
-                <b>GRR:</b> <span id="sumGRR"></span><br>
-                <b>Email:</b> <span id="sumEmail"></span><br>
-                <b>Telefone:</b> <span id="sumPhone"></span><br>
-                <b>Forma de Pagamento:</b> <span id="sumPaymentMethod"></span><br>
-            </p>
-            <p>
-                <b>Valor:</b> R$ <span id="sumPrice"></span>,00<br>
-            </p>
-            <p>
-                <b>Data de início:</b> <span id="sumStartDate"></span><br>
-                <b>Data de término:</b> <span id="sumEndDate"></span><br>
-            </p>
-            <p>
-                <b>Observações:</b> <span id="sumObservations"></span><br>
-            </p>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" onclick="cancelContract()">Cancelar contrato</button>
-                <button type="button" class="btn btn-success" onclick="sendContract()">Confirmar contrato</button>
-            </div>
-        </div>
-    </div>
-
-    <script defer src="modules/firebaseConfig.js"></script>
-    <script src="modules/includeHTML.js"></script>
-    <script src="modules/header.js"></script>
-    <script defer src="scripts/createnew.js"></script>
+        <script defer src="modules/firebaseConfig.js"></script>
+        <script src="modules/includeHTML.js"></script>
+        <script src="modules/header.js"></script>
+        <script defer src="scripts/createnew.js"></script>
 
 </body>
 

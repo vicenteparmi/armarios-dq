@@ -1,226 +1,387 @@
-// Add event listener to select to show input text if "other" is selected
-document
-    .getElementById("newContractType")
-    .addEventListener("change", function () {
-        if (this.value == "Outro") {
-            document.getElementById("newContractOther").style.display = "block";
-        } else {
-            document.getElementById("newContractOther").style.display = "none";
-        }
-    });
-
 let categoryDocRef;
 let userId;
+let prices;
+let selectedLockerNumber;
+let expirationDateGlobal;
 const db = firebase.firestore();
 
 firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-        // User is signed in.
-        userId = user.uid;
-        categoryDocRef = db.collection("users").doc(userId);
-    } else {
-        // No user is signed in.
-        userId = null;
-        alert("Você precisa estar logado para solicitar um contrato! Crie uma conta ou faça login.");
-        window.location.href = "auth.html";
-    }
+  if (user) {
+    // User is signed in.
+    userId = user.uid;
+    categoryDocRef = db.collection("users").doc(userId);
+
+    // Get the user data from firestore database
+    db.collection("users")
+      .doc(userId)
+      .get()
+      .then(function (doc) {
+        if (doc.exists) {
+          // Format the phone number to (xx) xxxxx-xxxx
+          let phone = doc.data().phone;
+          phone =
+            "(" +
+            phone.substring(0, 2) +
+            ") " +
+            phone.substring(2, 7) +
+            "-" +
+            phone.substring(7, 11);
+
+          // Show the user data in the screen
+          const content =
+            `<b>Nome completo:</b> <span>` +
+            doc.data().nome +
+            `</span><br>
+          <b>Curso:</b> <span>` +
+            doc.data().course +
+            `</span><br>
+          <b>GRR:</b> <span>GRR` +
+            doc.data().grr +
+            `</span><br>
+          <b>Email:</b> <span>` +
+            doc.data().email +
+            `</span><br>
+          <b>Telefone:</b> <span>` +
+            phone +
+            `</span><br>`;
+
+          document.getElementById("userData").innerHTML = content;
+
+          document.getElementById("contract-name").innerHTML = doc.data().nome;
+          document.getElementById("contract-course").innerHTML =
+            doc.data().course;
+
+          // Load user's lockers
+          db.collection("armarios")
+            .where("dono", "==", categoryDocRef)
+            .get()
+            .then(function (querySnapshot) {
+              querySnapshot.forEach(function (doc) {
+                // Format the date to dd/mm/yyyy
+                let date = doc.data().date.toDate();
+                date =
+                  date.getDate() +
+                  "/" +
+                  (date.getMonth() + 1) +
+                  "/" +
+                  date.getFullYear();
+
+                let expires = doc.data().expires.toDate();
+                expires =
+                  expires.getDate() +
+                  "/" +
+                  (expires.getMonth() + 1) +
+                  "/" +
+                  expires.getFullYear();
+
+                // Check if should be disabled
+                let disabled = "";
+                if (
+                  doc.data().situacao == "Regular" ||
+                  doc.data().situacao == "Problema no cadastro"
+                ) {
+                  disabled = "locker-disabled";
+                }
+
+                // Add the locker to the lockers-holder
+                const content =
+                  `<div class="locker ` +
+                  disabled +
+                  `" onclick="selectLocker(this, '` +
+                  doc.id +
+                  `')">
+                    <div class="locker-number">
+                        <span>` +
+                  doc.data().number +
+                  `</span>
+                    </div>
+                    <div class="locker-status" style="background-color: ` +
+                  doc.data().color +
+                  `;">
+                        <span>` +
+                  doc.data().situacao +
+                  `</span>
+                    </div>
+                </div>`;
+
+                // Add the locker to the lockers-holder
+                document
+                  .getElementById("lockers-holder")
+                  .insertAdjacentHTML("beforeend", content);
+              });
+            })
+            .catch(function (error) {
+              console.log("Error getting lockers: ", error);
+            });
+
+          // Load the price list from realtime database
+          firebase
+            .database()
+            .ref("settings/prices")
+            .once("value")
+            .then(function (snapshot) {
+              prices = {
+                semChem: snapshot.val().semChem,
+                semRegular: snapshot.val().semRegular,
+                yearChem: snapshot.val().yearChem,
+                yearRegular: snapshot.val().yearRegular,
+              };
+
+              // Show the prices in the screen based on the user's course type
+              const discountTypes = ["12B", "12E", "12D", "104A"];
+
+              // Check if the user's course type isn't in the discountTypes array and is different from "other"
+              if (
+                !discountTypes.includes(doc.data().type) &&
+                doc.data().type != "outro"
+              ) {
+                alert(
+                  "Seu cadastro pode estar incompleto, vá até a página de perfil para corrigir antes de fazer o contrato."
+                );
+              }
+
+              if (discountTypes.includes(doc.data().type)) {
+                document.getElementById("price-1").innerHTML =
+                  "R$ " + prices.semChem;
+                document.getElementById("price-2").innerHTML =
+                  "R$ " + prices.yearChem;
+              } else {
+                document.getElementById("price-1").innerHTML =
+                  "R$ " + prices.semRegular;
+                document.getElementById("price-2").innerHTML =
+                  "R$ " + prices.yearRegular;
+              }
+            });
+
+          // Calculate duration
+          setTimeout(function () {
+            changeDuration();
+          }, 1000);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch(function (error) {
+        console.log("Error getting document:", error);
+      });
+  } else {
+    // No user is signed in.
+    userId = null;
+    alert(
+      "Você precisa estar logado para solicitar um contrato! Crie uma conta ou faça login."
+    );
+    window.location.href = "auth.html";
+  }
 });
 
-let contract, user;
+// Select the locker
 
-function requestContract() {
-    // Get the values from the form
-    const name = document.getElementById("newContractName").value;
-    const number = document.getElementById("newContractNumber").value;
-    const type = document.getElementById("newContractType").value;
-    let other = document.getElementById("newContractOther").value;
-    const grr = document.getElementById("newContractGRR").value;
-    const email = document.getElementById("newContractEmail").value;
-    const phone = document.getElementById("newContractPhone").value;
-    const payment = document.getElementById("newContractPaymentMethod").value;
+let selectedLocker = document.getElementsByClassName("locker-new")[0];
 
-    // Check if the fields are empty
-    if (
-        name == "" ||
-        number == "" ||
-        type == "" ||
-        grr == "" ||
-        email == "" ||
-        phone == "" ||
-        payment == ""
-    ) {
-        alert("Preencha todos os campos!");
-        return;
-    }
+function selectLocker(locker, number) {
+  if (locker.classList.contains("locker-disabled")) {
+    return;
+  }
 
-    // Check if the contract number is already in use
-    db.collection("armarios")
-        .doc(number)
-        .get()
-        .then(function (doc) {
-            if (doc.exists) {
-                alert("Armário já ocupado! Caso esteja regularizando seu contrato, continue, caso contrário, escolha um armário vazio.");
-                return;
-            }
-        });
+  // Remove warning message
+  document.getElementById("locker-select-error").style.display = "none";
 
-    // Check if number
+  if (selectedLocker != null) {
+    selectedLocker.classList.remove("locker-selected");
+  }
 
-    if (other == "") {
-        other = "Química";
-    }
+  locker.classList.add("locker-selected");
+  selectedLocker = locker;
+  selectedLockerNumber = number;
 
-    contract = {
-        number: number,
-        payment: payment,
-        situacao: "Aguardando pagamento",
-        color: "blueviolet",
-        dono: categoryDocRef,
-        date: new Date(),
-    };
+  // Validate if the locker is the "new"
+  if (locker.classList.contains("locker-new")) {
+    validateLockerNumber();
+    selectedLockerNumber = document.getElementById("newLockerNumber").value;
+  }
 
-    user = {
-        nome: name,
-        email: email,
-        phone: phone,
-        type: type,
-        course: other,
-        grr: grr,
-    };
-
-    summarizeContract();
+  document.getElementById("contract-number").innerHTML = number;
 }
 
-function summarizeContract() {
-    // Show the modal with the summary
-    document.getElementById("summarizeModal").style.display = "block";
+// Validate locker number
 
-    const date = new Date();
+function validateLockerNumber() {
+  // Get the locker number
+  let num = document.getElementById("newLockerNumber").value;
 
-    // Show the contract summary
-    document.getElementById("sumName").innerHTML = user.nome;
-    document.getElementById("sumEmail").innerHTML = user.email;
-    document.getElementById("sumPhone").innerHTML = user.phone;
-    document.getElementById("sumType").innerHTML = user.course;
-    document.getElementById("sumGRR").innerHTML = user.grr;
-    document.getElementById("sumNumber").innerHTML = contract.number;
-    document.getElementById("sumPaymentMethod").innerHTML = contract.payment;
-    document.getElementById("sumStartDate").innerHTML =
-        date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-    document.getElementById("sumEndDate").innerHTML =
-        "Final do ano letivo de " + date.getFullYear();
-
-    // Calculate the price
-    let price = 0;
-    if ((user.course == "Química")) {
-        price = 20;
-    } else {
-        price = 35;
-    }
-
-    // Show the price
-    document.getElementById("sumPrice").innerHTML = price;
-
-    // Observation
-    const obs = [
-        "Leia atentamente todos os ítens do contrato ates de assinar.",
-        "Leia todas as informações de uso do contrato na aba <i>Como reservar</i>.",
-        "Conforme o método de pagamento escolhido, o pagamento deve ser realizado <b>presencialmente no CAQuí em até 7 dias</b>. Após esse prazo, a solicitação e contrato serão removidos do sistema.",
-        "Conforme o método de pagamento escolhido, o envio do valor do armario deve ser realizado <b>via PIX em até 7 dias</b> para a chave <i>caqui.ufpr@gmail.com</i> e o comprovante deve ser enviado logo em seguida para caqui.ufpr+armario@gmail.com. Sem o envio do comprovante a solicitação e contrato serão cancelados.",
-    ];
-
-    // Show the observations
-    const obsDiv = document.getElementById("sumObservations");
-    obsDiv.innerHTML += "<p>" + obs[0] + " " + obs[1] + "</p>";
-
-    if (contract.payment != "PIX") {
-        obsDiv.innerHTML += "<p>" + obs[2] + "</p>";
-    } else {
-        obsDiv.innerHTML += "<p>" + obs[3] + "</p>";
-    }
+  // Locate the locker on the database by id
+  db.collection("armarios")
+    .doc(num)
+    .get()
+    .then(function (doc) {
+      if (doc.exists) {
+        // Check if the locker is available
+        if (
+          doc.data().situacao == "Livre" ||
+          doc.data().situacao == "Irregular"
+        ) {
+          // Select the locker
+          document.getElementById("contract-number").innerHTML = num;
+          // Hide the error message
+          document.getElementById("locker-select-error").style.display = "none";
+        } else {
+          document.getElementById("locker-select-error").style.display =
+            "block";
+        }
+      } else {
+        // Select the locker
+        document.getElementById("contract-number").innerHTML = num;
+        selectedLockerNumber = num;
+        // Hide the error message
+        document.getElementById("locker-select-error").style.display = "none";
+      }
+    })
+    .catch(function (error) {
+      console.log("Error getting document:", error);
+    });
 }
 
-function cancelContract() {
-    document.getElementById("summarizeModal").style.display = "none";
+// Change duration on radio change
+
+function changeDuration() {
+  // Get the selected radio
+  let radio = document.querySelector('input[name="plan"]:checked').value;
+  let thisPrice;
+
+  if (radio == "1") {
+    radio = "Anual";
+    price = document.getElementById("price-1").innerHTML;
+  } else if (radio == "2") {
+    radio = "Semestral";
+    price = document.getElementById("price-2").innerHTML;
+  }
+
+  // Change the duration and price in the contract
+  document.getElementById("contract-duration").innerHTML = radio;
+  document.getElementById("contract-price").innerHTML = price;
+
+  // Update expiration date
+  updateExpirationDate();
+
+  // Set the price
 }
 
-function sendContract() {
-    // Add the contract to the database only if it doesn't exist
-    db.collection("armarios")
-        .doc(contract.number)
-        .get()
-        .then(function (doc) {
-            if (!doc.exists || doc.data().situacao == "Irregular") {
-                db.collection("armarios")
-                    .doc(contract.number)
-                    .set(contract)
-                    .then(function () {
-                        // Show the success message as an alert
-                        alert("Contrato criado com sucesso!");
+// Update expiration date
 
-                        // Log event firebase
-                        firebase.analytics().logEvent("contract_created", {
-                            number: contract.number,
-                            payment: contract.payment,
-                            date: contract.date,
-                        });
+function updateExpirationDate() {
+  // Get the selected radio
+  let radio = document.querySelector('input[name="plan"]:checked').value;
 
-                        // Hide the modal
-                        document.getElementById("summarizeModal").style.display = "none";
-                        // Clear the form
-                        document.getElementById("newContractName").value = "";
-                        document.getElementById("newContractNumber").value = "";
-                        document.getElementById("newContractType").value = "";
-                        document.getElementById("newContractOther").value = "";
-                        document.getElementById("newContractGRR").value = "";
-                        document.getElementById("newContractEmail").value = "";
-                        document.getElementById("newContractPhone").value = "";
-                        document.getElementById("newContractPaymentMethod").value = "";
-                    })
-                    .catch(function (error) {
-                        // Show the error message as an alert
-                        alert("Erro ao criar contrato: " + error);
-                    });
-            } else {
-                // Show the error message as an alert
-                alert("Erro ao criar contrato: Armário já ocupado!");
-            }
-        });
+  // Get the current date
+  let date = new Date();
 
+  // Add the months based on the selected radio
+  if (radio == "1") {
+    date.setMonth(date.getMonth() + 12);
+  } else if (radio == "2") {
+    date.setMonth(date.getMonth() + 6);
+  }
 
-    // Check and add the user to the database only if it doesn't exist
-    db.collection("users")
-        .doc(userId)
-        .get()
-        .then(function (doc) {
-            if (doc.exists) {
-                // Confirm user update
-                if (confirm("Deseja atualizar seus dados?\nSeus dados já se encontram na base de dados, clique em OK para atualizar suas informações.")) {
-                    db.collection("users")
-                        .doc(userId)
-                        .set(user)
-                        .then(function () {
-                            // Show the success message as an alert
-                            alert("Usuário atualizado com sucesso!");
-                        })
-                        .catch(function (error) {
-                            // Show the error message as an alert
-                            alert("Erro ao atualizar usuário: " + error);
-                        });
-                }
-            } else if (doc.exists == false) {
-                // Add the user to the database
-                db.collection("users")
-                    .doc(userId)
-                    .set(user)
-                    .then(function () {
-                        // Show the success message as an alert
-                        alert("Usuário criado com sucesso!");
-                    })
-                    .catch(function (error) {
-                        // Show the error message as an alert
-                        alert("Erro ao criar usuário: " + error);
-                    });
-            }
-        });
+  // Get the expiration date
+  let expirationDate = date.toLocaleDateString("pt-BR");
+
+  // Save var on global
+  expirationDateGlobal = date;
+
+  // Change the expiration date in the contract
+  document.getElementById("start-date").innerHTML =
+    new Date().toLocaleDateString("pt-BR");
+  document.getElementById("end-date").innerHTML = expirationDate;
+}
+
+// Select payment method
+
+document.getElementById("payment").addEventListener("change", () => {
+  // Get the selected payment method
+  let payment = document.getElementById("payment").value;
+
+  // Change the payment method in the contract
+  document.getElementById("contract-payment").innerHTML =
+    payment == "1" ? "PIX" : "Dinheiro";
+
+  // Display the payment instructions
+  if (payment == "1") {
+    document.getElementById("payment-instructions-PIX").style.display = "block";
+    document.getElementById("payment-instructions-dinheiro").style.display =
+      "none";
+  } else if (payment == "2") {
+    document.getElementById("payment-instructions-PIX").style.display = "none";
+    document.getElementById("payment-instructions-dinheiro").style.display =
+      "block";
+  }
+});
+
+// Make the contract
+
+function makeContract() {
+  // Check if user agreed to the terms
+  if (!document.getElementById("agree").checked) {
+    alert("Você precisa aceitar os termos do contrato para continuar!");
+    document.getElementById("agree").focus();
+    document.getElementById("agree").scrollIntoView();
+
+    // Scroll to the middle of the page
+    window.scrollBy(0, -window.innerHeight / 2);
+
+    document.getElementById("agree-error").style.display = "block";
+    return;
+  }
+
+  // Check if the user selected a locker
+  if (selectedLockerNumber == null) {
+    alert("Você precisa selecionar um armário para continuar!");
+    document.getElementById("newLockerNumber").scrollIntoView();
+
+    // Scroll to the middle of the page
+    window.scrollBy(0, -window.innerHeight / 2);
+    return;
+  }
+
+  // Get current user id
+  let userId = firebase.auth().currentUser.uid;
+
+  // Get owner ref from user id
+  let ownerRef = db.collection("users").doc(userId);
+
+  // Build the contract object
+  const contract = {
+    number: selectedLockerNumber,
+    color: "blueviolet",
+    date: new Date(),
+    expires: expirationDateGlobal,
+    payment: document.getElementById("payment").value,
+    situacao: "Aguardando pagamento",
+    dono: ownerRef,
+  };
+
+  console.log(contract);
+
+  // Add the contract to the firestore database
+  db.collection("armarios")
+    .doc(selectedLockerNumber)
+    .set(contract)
+    .then(() => {
+      // Alert the user
+      alert("Contrato criado com sucesso!");
+
+      // Log event firebase
+      firebase.analytics().logEvent("contract_created", {
+        number: contract.number,
+        payment: contract.payment,
+        date: contract.date,
+      });
+
+      // Redirect to the home page
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      // Alert the user
+      alert("Erro ao criar o contrato: " + error);
+    });
 }
