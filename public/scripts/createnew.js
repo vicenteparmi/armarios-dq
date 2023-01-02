@@ -145,6 +145,9 @@ firebase.auth().onAuthStateChanged(function (user) {
                   "R$ " + prices.semChem;
                 document.getElementById("price-2").innerHTML =
                   "R$ " + prices.yearChem;
+
+                // Show the discount payment-warning
+                document.getElementById("payment-warning").style.display = "block";
               } else {
                 document.getElementById("price-1").innerHTML =
                   "R$ " + prices.semRegular;

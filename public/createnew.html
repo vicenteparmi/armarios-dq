@@ -39,7 +39,7 @@
         <!-- Warning banner -->
 
         <div class="warning-banner">
-            <h2>No momento não estamos fazendo novos contratos</h2>
+            <h2 style="margin-top: 12px;">No momento não estamos fazendo novos contratos</h2>
             <p>
                 Como estamos no processo de troca de gestão, ainda não estamos fazendo contratos de armários. <br>
                 <b>Todos os armários, mesmo que com contratos marcados como irregular, não serão arrombados ao menos até
@@ -51,7 +51,7 @@
         <div class="body-contract">
             <!-- Informações -->
 
-            <h2>1. Informações do contratante</h2>
+            <h2 style="margin-top: 0;">1. Informações do contratante</h2>
             <p id="userData">
                 <b>Nome completo:</b> <span></span><br>
                 <b>Curso:</b> <span></span><br>
@@ -143,7 +143,7 @@
             </div>
             <p class="error" style="display: none;" id="payment-warning">
                 Atenção: os valores presentes nessa página são referentes a armários para estudantes dos cursos de
-                Química 12B, 12A, 12E e 104A, da UFPR. Caso você não seja um desses estudantes, o valor do armário
+                Química 12B, 12D, 12E e 104A, da UFPR. Caso você não seja um desses estudantes, o valor do armário
                 será diferente. Atualize suas informações no sistema para que o valor seja atualizado.
                 Caso os membros do CAQuí considerem necessário, poderão realizar a solicitação do comprovante de
                 matrícula para comprovação de vínculo com o curso.
@@ -221,123 +221,9 @@
 
             <!-- Button to submit -->
             <br>
-            <button id="submit-button" onclick="makeContract()">Solicitar contrato</button>
+            <button id="submit-button" onclick="">Solicitar contrato</button>
+            <!-- Enable it -->
 
-            <!-- <div class=" column">
-                        <form id="newContractForm" class="column-self">
-                            <div class="form-group">
-                                <label for="newContractName">Nome completo</label>
-                                <input type="text" name="newContractName" id="newContractName"
-                                    placeholder="Proprietário" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractNumber">Número do Armário</label>
-                                <input type="number" id="newContractNumber" name="newContractNumber" min="1" max="348"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractType">Curso</label>
-                                <select id="newContractType" name="newContractType" required>
-                                    <option value="Química">Química</option>
-                                    <option value="Outro">Outro</option>
-                                </select>
-                                <input style="display: none;" type="text" name="newContractOther" id="newContractOther"
-                                    placeholder="Escreva o seu curso">
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractGRR">GRR</label>
-                                <input type="number" id="newContractGRR" name="newContractGRR" required
-                                    placeholder="Exemplo: 20221234">
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractEmail">Email</label>
-                                <input type="email" name="newContractEmail" id="newContractEmail"
-                                    placeholder="exemplo@email.com" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractPhone">Telefone</label>
-                                <input type="tel" name="newContractPhone" id="newContractPhone"
-                                    placeholder="(00) 00000-0000" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="newContractPaymentMethod">Forma de Pagamento</label>
-                                <select name="newContractPaymentMethod" id="newContractPaymentMethod" required>
-                                    <option value="">Selecione</option>
-                                    <option value="Dinheiro">Dinheiro</option>
-                                    <option value="Cartão (Crédito)">Cartão de Crédito</option>
-                                    <option value="Cartão (Débito)">Cartão de Débito</option>
-                                    <option value="PIX">PIX</option>
-                                </select>
-                            </div>
-                            <br>
-                            <div class="buttons">
-                                <button type="reset">Limpar</button>
-                                <button type="button" onclick="requestContract()">Solicitar contrato</button>
-                                <button type="button" class="button-disabled" disabled>Solicitar contrato</button>
-                            </div>
-                        </form>
-
-                        <div class="column-self">
-                            <h3>Informações do contrato:</h3>
-                            <p>
-                                <b>Data de início:</b> a partir da confirmação do pagamento.<br>
-                                <b>Data de término:</b> último dia letivo de 2022.<br>
-                                <b>Valor:</b> <span id="price">Preencha o formulário primeiro.</span><br>
-                            </p>
-                            <p>Ao solicitar este documento, concorda-se com:
-                            <ul>
-                                <li>Desocupar o armário após o término deste contrato, com tolerância de 90 (noventa)
-                                    dias a partir
-                                    do
-                                    último dia letivo do ano, sob o risco de arrombamento;</li>
-                                <li>Em caso de arrombamento os pertences serão guardados no CAQuí por até 30 (trinta)
-                                    dias;
-                                <li>Não colocar adesivos dentro ou fora dos armários;</li>
-                                <li>Não avariar o armário;</li>
-                                <li>Não guardar drogas ilícitas e álcool;</li>
-                                <li>Em caso de denúncia, o armário poderá ser arrombado para comprovação, caso a
-                                    denúncia seja
-                                    inválida
-                                    o Centro Acadêmico de Química (CAQuí) se responsabilizará pela compra de um novo
-                                    cadeado;</li>
-                                <li>Não guardar itens de valor nos armários; a responsabilidade será inteiramente do
-                                    contratante.
-                                    Irregularidades implicarão na perda do serviço.</li>
-                            </ul>
-                            </p>
-                        </div>
-        </div> -->
-
-        </div>
-
-        <!-- Summarize the contract and confirm modal: -->
-        <div id="summarizeModal" class="modal">
-            <div class="modal-content">
-                <h3>Confirmar contrato</h3>
-                <p>
-                    <b>Nome:</b> <span id="sumName"></span><br>
-                    <b>Número do Armário:</b> <span id="sumNumber"></span><br>
-                    <b>Curso:</b> <span id="sumType"></span><br>
-                    <b>GRR:</b> <span id="sumGRR"></span><br>
-                    <b>Email:</b> <span id="sumEmail"></span><br>
-                    <b>Telefone:</b> <span id="sumPhone"></span><br>
-                    <b>Forma de Pagamento:</b> <span id="sumPaymentMethod"></span><br>
-                </p>
-                <p>
-                    <b>Valor:</b> R$ <span id="sumPrice"></span>,00<br>
-                </p>
-                <p>
-                    <b>Data de início:</b> <span id="sumStartDate"></span><br>
-                    <b>Data de término:</b> <span id="sumEndDate"></span><br>
-                </p>
-                <p>
-                    <b>Observações:</b> <span id="sumObservations"></span><br>
-                </p>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" onclick="cancelContract()">Cancelar contrato</button>
-                    <button type="button" class="btn btn-success" onclick="sendContract()">Confirmar contrato</button>
-                </div>
-            </div>
         </div>
 
         <script defer src="modules/firebaseConfig.js"></script>
