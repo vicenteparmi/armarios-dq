@@ -201,7 +201,6 @@ function selectLocker(locker, number) {
   // Validate if the locker is the "new"
   if (locker.classList.contains("locker-new")) {
     validateLockerNumber();
-    selectedLockerNumber = document.getElementById("newLockerNumber").value;
   }
 
   document.getElementById("contract-number").innerHTML = number;
@@ -210,6 +209,7 @@ function selectLocker(locker, number) {
 // Validate locker number
 
 function validateLockerNumber() {
+
   // Get the locker number
   let num = document.getElementById("newLockerNumber").value;
 
@@ -226,6 +226,7 @@ function validateLockerNumber() {
         ) {
           // Select the locker
           document.getElementById("contract-number").innerHTML = num;
+          selectedLockerNumber = num;
           // Hide the error message
           document.getElementById("locker-select-error").style.display = "none";
         } else {

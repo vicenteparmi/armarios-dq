@@ -158,7 +158,9 @@ function displayInfo(info) {
   let buttons = [
     `<button class="locker-detailed-button" onclick="window.location.href = '/createnew.html'"><i class="material-symbols-outlined">source_notes</i>Renovar</button>`,
     `<button class="locker-detailed-button"><i class="material-symbols-outlined">autorenew</i>Trocar</button>`,
-    `<button class="locker-detailed-button"><i class="material-symbols-outlined">delete</i>Abandonar</button>`,
+    `<button class="locker-detailed-button" onclick="abandonLocker(` +
+      info.id +
+      `)"><i class="material-symbols-outlined">delete</i>Abandonar</button>`,
   ];
   let activeButtons = [];
 
@@ -210,7 +212,9 @@ function displayInfo(info) {
             </div>
           </div>
           <div class="locker-detailed-buttons">
-            ` + activeButtons + `
+            ` +
+    activeButtons +
+    `
           </div>
         </div>
       </div>`;
@@ -358,4 +362,33 @@ function toggleDetailed(thisLocker) {
 
   // Toggle the div that is is contained in
   thisLocker.parentElement.classList.toggle("unactive");
+}
+
+// Abandon locker
+
+function abandonLocker(lockerId) {
+  // Confirm with prompt
+  const prompt = window.prompt(
+    "Tem certeza que deseja abandonar este armário? Digite 'sim' para confirmar.\n\nATENÇÃO: Você não poderá mais usar este armário!"
+  );
+  if (prompt.toLowerCase() != "sim") {
+    return;
+  }
+
+  lockerId = lockerId.toString();
+
+  db.collection("armarios")
+    .doc(lockerId)
+    .delete()
+    .then(() => {
+      console.log("Armário abandonado com sucesso!");
+
+      // Reload page
+      setTimeout(() => {
+        location.reload();
+      }, 1000);
+    })
+    .catch((error) => {
+      console.error("Erro ao abandonar armário: ", error);
+    });
 }
