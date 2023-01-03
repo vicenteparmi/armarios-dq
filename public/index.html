@@ -243,39 +243,41 @@
     </div>
   </div>
 
-  <!-- <div class="info-pannel-container">
-    <div class="info-pannel">
-      <div id="locker"></div>
-      <h3 style="margin: 0;" id="name">Carregando...</h3>
-      <p>Status: <span id="status"></span>
-        Contrato feito em: <span id="date"></span>
+  <!-- Change locker modal -->
+
+  <div id="change-locker-modal" class="modal closed">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Alterar armário</h2>
+        <span class="close" onclick="toggleModal()">&times;</span>
+      </div>
+      <p>Após verificar no Departamento se o armário está desocupado e colocar suas coisas e o cadeado, preencha
+        abaixo com o número para realizar a transferência.</p>
+      <div class="modal-body" style="flex-direction: row; justify-content: center; align-items: center;">
+
+        <div class="locker">
+          <span class="locker-title" id="change-locker-last-id">-</span>
+        </div>
+        <div>
+          <i class="material-icons" style="font-size: 48px; margin: 0 16px;" id="change-locker-arrow">arrow_forward</i>
+        </div>
+        <div class="locker">
+          <span class="locker-title">
+            <input type="number" id="change-locker" placeholder="NI" min="1" max="348" />
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="button-default" id="change-locker-button">Alterar</button>
+        <button class="button-default" onclick="toggleModal()">Cancelar</button>
+
+      </div>
+      <p id="change-locker-error" style="display: none;">
+        <i class="material-icons">error</i>
+        O armário selecionado não está disponível
       </p>
-      <a href="meuscontratos.html"><button>Gerenciar Armários</button></a>
     </div>
-
-    <div id="pre-load">
-      <p>Veja a situação de todos os armários clicando no botão abaixo. Para fazer um <b>novo contrato</b> clique na aba
-        gerenciar armários.</p>
-      <button onclick="loadPage()">Carregar armários</button>
-    </div>
-
-    <div class="info-table" id="loaded-table1">
-      <table id="table1" class="view-table">
-        <tr>
-          <th>Número</th>
-          <th>Situação</th>
-        </tr>
-      </table>
-    </div>
-    <div class="info-table" id="loaded-table2">
-      <table id="table2" class="view-table">
-        <tr>
-          <th>Número</th>
-          <th>Situação</th>
-        </tr>
-      </table>
-    </div>
-  </div> -->
+  </div>
 
   <script defer src="modules/firebaseConfig.js"></script>
   <script src="modules/includeHTML.js"></script>

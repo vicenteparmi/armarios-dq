@@ -110,6 +110,13 @@ a {
     width: 100%;
 }
 
+.modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
 .validation-error {
     color: #ff0000;
     font-size: 0.8rem;

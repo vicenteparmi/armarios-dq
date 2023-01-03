@@ -149,7 +149,9 @@ function loadContracts(user, username) {
 function displayInfo(info) {
   let buttons = [
     `<button class="locker-detailed-button" onclick="window.location.href = '/createnew.html'"><i class="material-symbols-outlined">source_notes</i>Renovar</button>`,
-    `<button class="locker-detailed-button"><i class="material-symbols-outlined">autorenew</i>Trocar</button>`,
+    `<button class="locker-detailed-button" onclick="toggleModal(` +
+      info.id +
+      `)"><i class="material-symbols-outlined">autorenew</i>Trocar</button>`,
     `<button class="locker-detailed-button" onclick="abandonLocker(` +
       info.id +
       `)"><i class="material-symbols-outlined">delete</i>Abandonar</button>`,
@@ -382,5 +384,107 @@ function abandonLocker(lockerId) {
     })
     .catch((error) => {
       console.error("Erro ao abandonar armário: ", error);
+    });
+}
+
+// Open and close modal
+function toggleModal(lockerId) {
+  if (lockerId) {
+    // Set locker id on modal
+    document.getElementById("change-locker-last-id").innerHTML = lockerId;
+    // Set locker id on button
+    document
+      .getElementById("change-locker-button")
+      .setAttribute("onclick", "changeLocker(" + lockerId + ")");
+  }
+
+  document.getElementById("change-locker-modal").classList.toggle("closed");
+}
+
+// Change locker
+
+function changeLocker(lockerId) {
+  // Animate arrow
+  document.getElementById("change-locker-arrow").classList.add("animate");
+
+  // Parse locker id to string
+  lockerId = lockerId.toString();
+
+  // Get error and hide
+  const error = document.getElementById("change-locker-error");
+  error.style.display = "none";
+
+  // Get new locker id
+  const newLockerId = document.getElementById("change-locker").value.toString();
+
+  // Check if new locker id is valid
+  if (newLockerId <= 0 || newLockerId > 348) {
+    // Display error
+    error.style.display = "flex";
+
+    // Stop animation
+    document.getElementById("change-locker-arrow").classList.remove("animate");
+    return;
+  }
+
+  // Check if new locker id is available
+  db.collection("armarios")
+    .doc(newLockerId)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        // Check if locker is available
+        let sit = doc.data().situacao;
+        let allowedSit = ["Irregular", "Livre"];
+        if (allowedSit.includes(sit)) {
+          saveChangeLocker(lockerId, newLockerId);
+        } else {
+          // Stop animation
+          document.getElementById("change-locker-arrow").classList.remove("animate");
+          // Display error
+          error.style.display = "flex";
+        }
+      } else {
+        saveChangeLocker(lockerId, newLockerId);
+      }
+    })
+    .catch((error) => {
+      console.log("Error getting document:", error);
+    });
+}
+
+function saveChangeLocker(old, newL) {
+  // Get locker data
+  db.collection("armarios")
+    .doc(old)
+    .get()
+    .then((doc) => {
+      // Create new locker
+      db.collection("armarios")
+        .doc(newL)
+        .set(doc.data())
+        .then(() => {
+          console.log("Armário criado com sucesso!");
+
+          // Delete old locker
+          db.collection("armarios")
+            .doc(old)
+            .delete()
+            .then(() => {
+              console.log("Armário abandonado com sucesso!");
+              alert("Troca realizada com sucesso!");
+
+              // Reload page
+              setTimeout(() => {
+                location.reload();
+              }, 1000);
+            })
+            .catch((error) => {
+              console.error("Erro ao abandonar armário: ", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Erro ao criar armário: ", error);
+        });
     });
 }
