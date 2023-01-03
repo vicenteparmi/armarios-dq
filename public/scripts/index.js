@@ -136,7 +136,7 @@ function loadContracts(user, username) {
         const expires =
           data.expires == undefined
             ? "..."
-            : new Date(data.expires.seconds * 1000)
+            : new Date(data.expires.seconds * 1000);
 
         contracts.push({
           id: id,
@@ -155,46 +155,24 @@ function loadContracts(user, username) {
 }
 
 function displayInfo(info) {
-  // const name = document.getElementById("name");
-  // const number = ni(document.getElementById("locker"));
-  // const situation = document.getElementById("status");
-  // const date = document.getElementById("date");
+  let buttons = [
+    `<button class="locker-detailed-button" onclick="window.location.href = '/createnew.html'"><i class="material-symbols-outlined">source_notes</i>Renovar</button>`,
+    `<button class="locker-detailed-button"><i class="material-symbols-outlined">autorenew</i>Trocar</button>`,
+    `<button class="locker-detailed-button"><i class="material-symbols-outlined">delete</i>Abandonar</button>`,
+  ];
+  let activeButtons = [];
 
-  // // Get contracts holder
-  // const holder = document.getElementById("lockers-holder");
+  if (info.sit == "Regular" || info.sit == "Problema no cadastro") {
+    activeButtons.push(buttons[1]);
+  } else if (info.sit == "Irregular") {
+    activeButtons.push(buttons[0]);
+    activeButtons.push(buttons[2]);
+  } else if (info.sit == "Aguardando pagamento") {
+    activeButtons.push(buttons[1]);
+    activeButtons.push(buttons[2]);
+  }
 
-  // // Create divs
-  // const locker = document.createElement("div");
-  // const lockerNumber = document.createElement("div");
-  // const lockerSituation = document.createElement("div");
-  // const lockerDate = document.createElement("div");
-
-  // // Add classes
-  // locker.classList.add("locker");
-  // lockerNumber.classList.add("locker-title");
-  // lockerSituation.classList.add("locker-status");
-  // lockerDate.classList.add("locker-date");
-
-  // // Set color
-  // lockerSituation.style.backgroundColor = info.color;
-
-  // // Add content
-  // lockerNumber.innerHTML = info.id;
-  // lockerSituation.innerHTML = info.sit;
-  // lockerDate.innerHTML =
-  //   "Validade<br/><b>" +
-  //   new Date(info.expires).toLocaleDateString("pt-BR") +
-  //   "</b>";
-
-  // if (info.number == 69) {
-  //   lockerNumber.style.transform = "rotate(90deg)";
-  // }
-
-  // // Add to holder
-  // locker.appendChild(lockerNumber);
-  // locker.appendChild(lockerSituation);
-  // locker.appendChild(lockerDate);
-  // holder.appendChild(locker);
+  activeButtons = activeButtons.join("");
 
   let lockerHTML =
     `
@@ -232,22 +210,15 @@ function displayInfo(info) {
             </div>
           </div>
           <div class="locker-detailed-buttons">
-            <button class="locker-detailed-button">
-              <i class="material-symbols-outlined">source_notes</i>
-              Renovar
-            </button>
-            <button class="locker-detailed-button">
-              <i class="material-symbols-outlined">autorenew</i>
-              Trocar
-            </button>
+            ` + activeButtons + `
           </div>
         </div>
       </div>`;
 
-
   // Append as the first child
-  document.getElementById("lockers-holder").insertAdjacentHTML("afterbegin", lockerHTML);
-
+  document
+    .getElementById("lockers-holder")
+    .insertAdjacentHTML("afterbegin", lockerHTML);
 }
 
 // Format number
