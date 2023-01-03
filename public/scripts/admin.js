@@ -609,7 +609,7 @@ function expireContracts() {
           let diff = today.getTime() - contractDate.getTime();
           let days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-          if (days > 0 && contract.situacao != "Irregular") {
+          if (days > 0 && contract.situacao == "Regular") {
             db.collection("armarios")
               .doc(contractNumber)
               .update({
