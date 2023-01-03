@@ -98,13 +98,6 @@ firebase.auth().onAuthStateChanged(function (user) {
         if (doc.exists) {
           username = doc.data().nome;
           loadContracts(categoryDocRef, username);
-        } else {
-          displayInfo({
-            owner: "Nenhum contrato criado",
-            sit: "Nenhum contrato foi criado por você através do site. Clque em 'Gerenciar' para fazer seu contrato.",
-            id: "NI",
-            date: "...",
-          });
         }
       });
 
@@ -120,7 +113,6 @@ let contracts = [];
 
 function loadContracts(user, username) {
   let curso = user.get();
-  console.log(curso);
 
   db.collection("armarios")
     .where("dono", "==", user)

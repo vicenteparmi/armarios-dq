@@ -73,6 +73,11 @@ window.onload = function () {
               doc.data().course == "outro" ? "block" : "none";
           } else {
             // doc.data() will be undefined in this case
+            // Display warning
+            document.querySelector("#warning").style.display = "block";
+
+            // Hide loading animation
+            document.querySelector("#name").innerHTML = "Preencha os dados";
             console.log("No such document!");
           }
         })
@@ -177,26 +182,74 @@ function deleteAccount() {
   );
 
   // If user types 'deletar', delete account
-  if (confirmation == "excluir") {
+  if (confirmation.toLowerCase() == "excluir") {
+    // Get current user
     var user = firebase.auth().currentUser;
-    user
+    var userID = user.uid;
+
+    // Remove user from database
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(userID)
       .delete()
       .then(function () {
-        // Account deleted.
-        alert("Sua conta foi excluída.");
-        // Redirect to home page
-        window.location.href = "index.html";
+        console.log("Document successfully deleted!");
       })
       .catch(function (error) {
-        // An error happened.
-        alert("Erro ao excluir a conta.");
+        console.error("Error removing document: ", error);
+        return;
+      });
+
+    // Get user reference for firestore database
+    var userRef = firebase.firestore().collection("users").doc(userID);
+
+    // Remove user's lockers
+    firebase
+      .firestore()
+      .collection("armarios")
+      .where("dono", "==", userRef)
+      .get()
+      .then(function (querySnapshot) {
+        querySnapshot.forEach(function (doc) {
+          // Delete user's lockers
+          firebase
+            .firestore()
+            .collection("armarios")
+            .doc(doc.id)
+            .delete()
+            .then(function () {
+              console.log("Locker successfully deleted!");
+            })
+            .catch(function (error) {
+              console.error("Error removing locker: ", error);
+              return;
+            });
+        });
+      })
+      .then(function () {
+        // Delete user from firebase authentication
+        user
+          .delete()
+          .then(function () {
+            // Account deleted.
+            alert("Sua conta foi excluída.");
+            // Redirect to home page
+            window.location.href = "index.html";
+          })
+          .catch(function (error) {
+            // An error happened.
+            alert(
+              "Erro ao excluir a conta. Faça o login novamente. As informações da base de dados já foram excluídas.\n\n" +
+                error
+            );
+          });
       });
   }
 }
 
 // Update user data
 function update() {
-
   // Run validation
   if (!validation()) {
     alert("Por favor, corrija os erros e preencha todos os campos.");
@@ -243,7 +296,7 @@ function update() {
   // Update user data on firestore database
   db.collection("users")
     .doc(userId)
-    .update({
+    .set({
       nome: name,
       email: email,
       phone: phone,
@@ -255,6 +308,9 @@ function update() {
       // Update successful
       alert("Dados atualizados com sucesso.");
 
+      // Hide warning message
+      document.getElementById("warning").style.display = "none";
+
       document.getElementById("name").innerHTML = name;
       document.getElementById("email").innerHTML = email;
       document.getElementById("phone").innerHTML = phone;
@@ -265,16 +321,19 @@ function update() {
       document.getElementById("modal").classList.toggle("modal-closed");
 
       // Change name and email on firebase auth
-      firebase.auth().currentUser.updateProfile({
-        displayName: name,
-      }).then(function() {
-        // Update successful.
-        console.log("Nome atualizado com sucesso.");
-      }).catch(function(error) {
-        // An error occurred.
-        console.log("Erro ao atualizar o nome.");
-      });
-      
+      firebase
+        .auth()
+        .currentUser.updateProfile({
+          displayName: name,
+        })
+        .then(function () {
+          // Update successful.
+          console.log("Atualizado com sucesso");
+        })
+        .catch(function (error) {
+          // An error occurred.
+          console.log("Erro ao atualizar.\n\n" + error);
+        });
     })
     .catch(function (error) {
       // An error happened

@@ -100,3 +100,27 @@
     font-size: 12px;
     margin-bottom: 8px;
 }
+
+.warning {
+    background-color: #f44336;
+    color: white;
+    text-align: center;
+    padding: 12px 24px;
+    margin: 0 auto 24px auto;
+    border-radius: 16px;
+    border: 1px solid black;
+    max-width: 600px;
+    box-sizing: border-box;
+    animation: fadeup 0.5s;
+}
+
+@keyframes fadeup {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

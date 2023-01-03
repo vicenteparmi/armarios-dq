@@ -163,6 +163,10 @@ firebase.auth().onAuthStateChanged(function (user) {
         } else {
           // doc.data() will be undefined in this case
           console.log("No such document!");
+
+          // Redirect to the profile page
+          alert("Seu cadastro está incompleto, vá até a página de perfil para corrigir antes de fazer o contrato.");
+          window.location.href = "perfil.html";
         }
       })
       .catch(function (error) {
