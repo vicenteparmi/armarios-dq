@@ -4,7 +4,7 @@ const db = firebase.firestore();
 let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
-  if (user.uid == "bpbIRaXHHLZ3isMjeXUqcTdZ1CN2") {
+  if (user.uid == ("bpbIRaXHHLZ3isMjeXUqcTdZ1CN2" || "qPjBuIUwEBRXsUYipLGzi4HVOeA2")) {
 
     userId = user.uid;
 
