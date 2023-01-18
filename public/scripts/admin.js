@@ -4,12 +4,7 @@ const db = firebase.firestore();
 let userId;
 
 firebase.auth().onAuthStateChanged(function (user) {
-  if (user.uid == "Cou0Q8evLYa9xWq8QfWkpXzjZij1") {
-    // User is signed in.
-    if (user.uid != "Cou0Q8evLYa9xWq8QfWkpXzjZij1") {
-      alert("Você não tem permissão para acessar essa página.");
-      window.location.href = "index.html";
-    }
+  if (user.uid == "bpbIRaXHHLZ3isMjeXUqcTdZ1CN2") {
 
     userId = user.uid;
 

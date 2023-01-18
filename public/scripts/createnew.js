@@ -142,17 +142,17 @@ firebase.auth().onAuthStateChanged(function (user) {
 
               if (discountTypes.includes(doc.data().type)) {
                 document.getElementById("price-1").innerHTML =
-                  "R$ " + prices.semChem;
-                document.getElementById("price-2").innerHTML =
                   "R$ " + prices.yearChem;
+                document.getElementById("price-2").innerHTML =
+                  "R$ " + prices.semChem;
 
                 // Show the discount payment-warning
                 document.getElementById("payment-warning").style.display = "block";
               } else {
                 document.getElementById("price-1").innerHTML =
-                  "R$ " + prices.semRegular;
-                document.getElementById("price-2").innerHTML =
                   "R$ " + prices.yearRegular;
+                document.getElementById("price-2").innerHTML =
+                  "R$ " + prices.semRegular;
               }
             });
 
