@@ -418,7 +418,7 @@ function changeLocker(lockerId) {
   const newLockerId = document.getElementById("change-locker").value.toString();
 
   // Check if new locker id is valid
-  if (newLockerId <= 0 || newLockerId > 348) {
+  if (newLockerId <= 0 || newLockerId > 384) {
     // Display error
     error.style.display = "flex";
 
