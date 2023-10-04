@@ -158,13 +158,11 @@ function displayInfo(info) {
   ];
   let activeButtons = [];
 
-  if (info.sit == "Regular" || info.sit == "Problema no cadastro") {
+  if (info.sit == "Regular" || info.sit == "Problema no cadastro" || info.sit == "Aguardando pagamento") {
     activeButtons.push(buttons[1]);
+    activeButtons.push(buttons[2]);
   } else if (info.sit == "Irregular") {
     activeButtons.push(buttons[0]);
-    activeButtons.push(buttons[2]);
-  } else if (info.sit == "Aguardando pagamento") {
-    activeButtons.push(buttons[1]);
     activeButtons.push(buttons[2]);
   }
 
@@ -363,7 +361,7 @@ function toggleDetailed(thisLocker) {
 function abandonLocker(lockerId) {
   // Confirm with prompt
   const prompt = window.prompt(
-    "Tem certeza que deseja abandonar este armário? Digite 'sim' para confirmar.\n\nATENÇÃO: Você não poderá mais usar este armário!"
+    "Tem certeza que deseja abandonar este armário? Digite 'sim' para confirmar.\n\nATENÇÃO: Você não poderá mais usar este armário e não receberá reembolso pelo período já pago."
   );
   if (prompt.toLowerCase() != "sim") {
     return;
