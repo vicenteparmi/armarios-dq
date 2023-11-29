@@ -7,7 +7,7 @@ firebase.auth().onAuthStateChanged(function (user) {
   if (user.uid == ("qPjBuIUwEBRXsUYipLGzi4HVOeA2")) {
 
     userId = user.uid;
-qPjBuIUwEBRXsUYipLGzi4HVOeA2
+    
     let username;
 
     db.collection("users")
