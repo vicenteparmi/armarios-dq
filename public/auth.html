@@ -16,21 +16,24 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            max-width: 300px;
+            max-width: 320px;
             margin: 0 auto;
         }
+
         .input-field {
-            width: 100%;
+            width: calc(100% - 22px);
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
         }
+
         .input-field:focus {
             outline: none;
             border-color: #007bff;
         }
+
         .btn {
             width: 100%;
             padding: 10px;
@@ -40,26 +43,31 @@
             cursor: pointer;
             margin-bottom: 10px;
         }
+
         .btn:hover {
             opacity: 0.8;
             border: 1px solid #007bff;
             background-color: initial;
             color: initial;
         }
+
         .btn-primary {
             background-color: #007bff;
             color: white;
         }
+
         .btn-secondary {
             background-color: #ffffff;
             color: #757575;
             border: 1px solid #dadce0;
         }
+
         .divider {
             margin: 20px 0;
             text-align: center;
             position: relative;
         }
+
         .divider::before {
             content: "";
             position: absolute;
@@ -68,27 +76,41 @@
             right: 0;
             border-top: 1px solid #dadce0;
         }
+
         .divider span {
             background-color: white;
             padding: 0 10px;
             position: relative;
             color: #757575;
         }
+
         .toggle-mode {
             text-align: center;
             margin-top: 10px;
         }
+
         .toggle-mode a {
             color: #007bff;
             text-decoration: none;
         }
+
         .error-message {
             color: #d32f2f;
             font-size: 14px;
             margin-bottom: 10px;
         }
+
         .hidden {
             display: none;
+        }
+
+        #inAppBrowserWarning {
+            background-color: rgb(255, 73, 73);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         /* Make the card full width and transparent on phones */
@@ -102,7 +124,7 @@
             }
         }
     </style>
-   
+
     <!-- update the version number as needed -->
     <script src="/__/firebase/9.6.7/firebase-app-compat.js"></script>
     <!-- include only the Firebase features as you need -->
@@ -120,34 +142,48 @@
     </div>
 
     <div class="section-default">
+
+
+
         <div class="card">
-            
+
+            <!-- Warning that is displayed on in-app browsers -->
+            <div id="inAppBrowserWarning" class="hidden">
+                <h4 style="margin-top: 8px; margin-bottom: 8px;">
+                    Atenção!
+                </h4>
+                Parece que você está utilizando um navegador dentro de um aplicativo. Para fazer login, abra esta página
+                em um navegador externo clicando no botão de menu do seu dispositivo.
+            </div>
+
             <form id="authForm">
+                <h3 style="margin-top: 8px; margin-bottom: 8px;">Acesso com email</h3>
                 <input type="email" id="email" class="input-field" placeholder="Email" required>
                 <input type="password" id="password" class="input-field" placeholder="Senha" required>
                 <input type="password" id="confirmPassword" class="input-field hidden" placeholder="Confirmar senha">
                 <div id="errorMessage" class="error-message hidden"></div>
                 <button type="submit" id="submitButton" class="btn btn-primary">Entrar</button>
             </form>
-            
+
             <div class="divider">
                 <span>ou</span>
             </div>
-            
+
             <button id="googleSignIn" class="btn btn-secondary">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" style="margin-right: 8px;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18"
+                    style="margin-right: 8px;">
                 Entrar com o Google
             </button>
 
             <div class="toggle-mode">
-                Novo por aqui? 
+                Novo por aqui?
                 <a href="#" id="toggleMode">Crie uma conta</a>
             </div>
         </div>
     </div>
 
-    <br/>
-    <br/>
+    <br />
+    <br />
 
     <script src="modules/includeHTML.js"></script>
     <script>
@@ -228,6 +264,16 @@
                     });
             }
         });
+
+        let isInWebAppiOS = (window.navigator.standalone === true);
+        let isInWebAppChrome = (window.matchMedia('(display-mode: standalone)').matches);
+        let isInwebAppAndroid = (navigator.userAgent.includes("Android") && (navigator.userAgent.includes("wv") || navigator.userAgent.includes("WebView")));
+        let isInWebApp = (isInWebAppiOS || isInWebAppChrome || isInwebAppAndroid);
+
+        // In app browser warning
+        if (isInWebApp) {
+            document.getElementById('inAppBrowserWarning').classList.remove('hidden');
+        }
     </script>
 </body>
 
