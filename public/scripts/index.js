@@ -252,7 +252,7 @@ const namesExample = [
 const numbersExample = ["12", "321", "69"];
 const emailsExample = [
   "caqui.ufpr@gmail.com",
-  "vicenteparmigiani@ufpr.br",
+  "vicenteparmigiani@gmail.com",
   "arnoldsommerfeld2023@gmail.com",
 ];
 
