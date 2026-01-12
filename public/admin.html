@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração | Armários DQ - Área Administrativa</title>
+    <title>Administrador | Armários DQ</title>
     <link rel="icon" type="image/png" href="/files/Logo.png">
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Área administrativa do sistema de armários DQ. Acesso restrito para gerenciamento de contratos e administração.">
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="canonical" href="https://armariosdq.web.app/admin.html">
     <link href="https://fonts.googleapis.com/css?family=Muli:400,700,900&amp;display=swap&amp;subset=latin-ext"
         rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/9.6.7/firebase-app-compat.js"></script>
@@ -38,174 +35,487 @@
     <div class="section-title-default">
         <h2>Administração dos Armários</h2>
         <p style="color: white; max-width: none;">
-            Essa
-            página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login na
-            conta autorizada.
+            Painel de controle para gerenciamento de contratos e armários do Departamento de Química.
         </p>
     </div>
 
-    <div class="section-default">
+    <div class="admin-container">
+        <!-- Dashboard Stats Section -->
+        <section class="admin-section">
+            <h2 class="section-heading">
+                <span class="material-symbols-outlined">dashboard</span>
+                Visão Geral
+            </h2>
 
-        <h2>Visualizar e modificar contratos</h2>
-        <p>Essa página é feita apenas para membros e administradores do site. Os dados serão carregados apenas com login
-            na
-            conta autorizada.</p>
-
-        <div class="cards-holder">
-            <div class="card-blue" onclick="prepareTable()">Ver e editar<br>contratos</div>
-            <div class="card-blue" onclick="newContractModal()">Criar novo<br>contrato</div>
-            <div class="card-blue" onclick="filterContract()">Filtrar<br>visualização</div>
-            <div class="card-blue" onclick="expireContracts()">Atualizar<br>contratos vencidos</div>
-        </div><br>
-
-        <h2>Estatísticas</h2>
-        <p>Resumos das informações dos armários.</p>
-
-        <div style="display: flex;">
-            <div id="info-summary">
-                <div>
-                    <span id="big-number">...</span>
-                    <p style="margin-top: 0; font-weight: 700;">Contratos ativos</p>
+            <div class="stats-grid">
+                <div class="stat-card" data-status="total">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-total">...</span>
+                        <span class="stat-label">Contratos Ativos</span>
+                    </div>
                 </div>
-                <ul style="list-style: none;">
-                    <li>Regulares: <span id="cRegulares"></span></li>
-                    <li>Irregulares: <span id="cIrregulares"></span></li>
-                    <li>Aguardando pagamento: <span id="cAguaP"></span></li>
-                    <li>Inutilizáveis: <span id="cInutilizavel"></span></li>
-                </ul>
+                <div class="stat-card" data-status="regular">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">check_circle</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-regular">...</span>
+                        <span class="stat-label">Regulares</span>
+                    </div>
+                </div>
+                <div class="stat-card" data-status="irregular">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">error</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-irregular">...</span>
+                        <span class="stat-label">Irregulares</span>
+                    </div>
+                </div>
+                <div class="stat-card" data-status="waiting">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-waiting">...</span>
+                        <span class="stat-label">Aguardando Pgto</span>
+                    </div>
+                </div>
+                <div class="stat-card" data-status="unusable">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">block</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-unusable">...</span>
+                        <span class="stat-label">Inutilizáveis</span>
+                    </div>
+                </div>
+                <div class="stat-card" data-status="free">
+                    <div class="stat-icon">
+                        <span class="material-symbols-outlined">lock_open</span>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number" id="stat-free">...</span>
+                        <span class="stat-label">Livres</span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div overflow-x="auto" id="popup-table">
-            <div class="close" onclick="closeTable()">
-                &times;
+            <!-- Status Distribution Bar -->
+            <div class="status-distribution">
+                <div class="distribution-label">Distribuição de Status</div>
+                <div class="distribution-bar" id="distribution-bar">
+                    <div class="bar-segment regular" id="bar-regular" style="width: 0%" data-tooltip="Regular"></div>
+                    <div class="bar-segment irregular" id="bar-irregular" style="width: 0%" data-tooltip="Irregular">
+                    </div>
+                    <div class="bar-segment waiting" id="bar-waiting" style="width: 0%" data-tooltip="Aguardando"></div>
+                    <div class="bar-segment reserved" id="bar-reserved" style="width: 0%" data-tooltip="CAQuí"></div>
+                    <div class="bar-segment unusable" id="bar-unusable" style="width: 0%" data-tooltip="Inutilizável">
+                    </div>
+                    <div class="bar-segment free" id="bar-free" style="width: 0%" data-tooltip="Livre"></div>
+                </div>
+                <div class="distribution-legend">
+                    <span class="legend-item"><span class="legend-color regular"></span> Regular</span>
+                    <span class="legend-item"><span class="legend-color irregular"></span> Irregular</span>
+                    <span class="legend-item"><span class="legend-color waiting"></span> Aguardando</span>
+                    <span class="legend-item"><span class="legend-color reserved"></span> CAQuí</span>
+                    <span class="legend-item"><span class="legend-color unusable"></span> Inutilizável</span>
+                    <span class="legend-item"><span class="legend-color free"></span> Livre</span>
+                </div>
             </div>
-            <table id="table">
-                <colgroup>
-                    <col span="1" style="width: 3%;">
-                    <col span="1" style="width: 15%;">
-                    <col span="1" style="width: 51%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 8%;">
-                    <col span="1" style="width: 15%;">
-                </colgroup>
-                <tr>
-                    <th>Número</th>
-                    <th>Situação</th>
-                    <th>Proprietário</th>
-                    <th>Data do Contrato</th>
-                    <th>Vencimento</th>
-                    <th>Ações</th>
-                </tr>
-            </table>
-        </div>
 
-        <!-- Edit contract popup -->
-        <div id="editContract" class="modal">
-            <div class="modal-content">
+            <!-- Expiring Soon Alert -->
+            <div class="expiring-alert" id="expiring-alert" style="display: none;">
+                <span class="material-symbols-outlined">warning</span>
+                <span id="expiring-count">0</span> contratos vencem nos próximos 7 dias
+                <button class="btn-small" onclick="filterExpiring()">Ver lista</button>
+            </div>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="admin-section">
+            <h2 class="section-heading">
+                <span class="material-symbols-outlined">bolt</span>
+                Ações Rápidas
+            </h2>
+
+            <div class="quick-actions">
+                <button class="action-btn primary" onclick="newContractModal()">
+                    <span class="material-symbols-outlined">add</span>
+                    Novo Contrato
+                </button>
+                <button class="action-btn" onclick="expireContracts()">
+                    <span class="material-symbols-outlined">update</span>
+                    Atualizar Vencidos
+                </button>
+                <button class="action-btn" onclick="exportData()">
+                    <span class="material-symbols-outlined">download</span>
+                    Exportar CSV
+                </button>
+            </div>
+        </section>
+
+        <!-- Contracts Table Section -->
+        <section class="admin-section">
+            <h2 class="section-heading">
+                <span class="material-symbols-outlined">table_chart</span>
+                Contratos
+            </h2>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="search-box">
+                    <span class="material-symbols-outlined">search</span>
+                    <input type="text" id="search-input" placeholder="Buscar por nome ou número..."
+                        oninput="searchContracts()">
+                </div>
+
+                <div class="filter-group">
+                    <select id="filter-status" onchange="applyFilters()">
+                        <option value="all">Todos os Status</option>
+                        <option value="Regular">Regular</option>
+                        <option value="Irregular">Irregular</option>
+                        <option value="Aguardando pagamento">Aguardando Pagamento</option>
+                        <option value="Problema no cadastro">Problema no Cadastro</option>
+                        <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                        <option value="Não utilizável">Não Utilizável</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <select id="filter-expiry" onchange="applyFilters()">
+                        <option value="all">Todos os Vencimentos</option>
+                        <option value="7">Próximos 7 dias</option>
+                        <option value="30">Próximos 30 dias</option>
+                        <option value="expired">Já vencidos</option>
+                    </select>
+                </div>
+
+                <button class="btn-clear" onclick="clearFilters()">
+                    <span class="material-symbols-outlined">filter_alt_off</span>
+                    Limpar
+                </button>
+            </div>
+
+            <!-- Results Info -->
+            <div class="results-info">
+                <span id="results-count">Carregando...</span>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <table id="contracts-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" onclick="sortTable('id')">
+                                Nº
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('status')">
+                                Status
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('owner')">
+                                Proprietário
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('date')">
+                                Data
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th class="sortable" onclick="sortTable('expires')">
+                                Vencimento
+                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                            </th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr class="loading-row">
+                            <td colspan="6">
+                                <div class="loading-spinner"></div>
+                                Carregando contratos...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button class="page-btn" id="prev-page" onclick="changePage(-1)" disabled>
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <span class="page-info">
+                    Página <span id="current-page">1</span> de <span id="total-pages">1</span>
+                </span>
+                <button class="page-btn" id="next-page" onclick="changePage(1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+                <select id="items-per-page" onchange="changeItemsPerPage()">
+                    <option value="10">10 por página</option>
+                    <option value="25" selected>25 por página</option>
+                    <option value="50">50 por página</option>
+                    <option value="100">100 por página</option>
+                </select>
+            </div>
+        </section>
+    </div>
+
+    <!-- Edit Contract Modal -->
+    <div id="editContract" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <span class="material-symbols-outlined">edit</span>
+                    Editar Contrato
+                </h3>
                 <span class="close" onclick="closeModal()">&times;</span>
-                <h3>Editar Contrato</h3>
-                <p><b>Número do Contrato:</b> <span id="contractNumber"></span><br>
-                    <b>Nome:</b> <span id="infoName"></span><br>
-                    <b>Telefone:</b> <span id="infoPhone"></span><br>
-                    <b>Email:</b> <span id="infoEmail"></span><br>
-                    <b>Curso:</b> <span id="infoCourse"></span><br>
-                    <b>GRR:</b> <span id="infoGRR"></span><br>
-                    <b>Método de Pagamento:</b> <span id="infoPay"></span><br>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-description">
+                    <strong>Armário #<span id="contractNumber"></span></strong> - Edite os campos abaixo
                 </p>
+
                 <form id="editContractForm">
                     <input type="hidden" id="editContractId" name="id">
-                    <div class="input-group">
-                        <label for="editContractDate">Data do Contrato</label>
-                        <input type="text" id="editContractDate" name="date" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="editContractStatus">Situação</label>
-                        <select id="editContractStatus" name="status" required>
-                            <option value="Aguardando pagamento">Aguardando pagamento</option>
-                            <option value="Regular">Regular</option>
-                            <option value="Irregular">Irregular</option>
-                            <option value="Livre">Livre</option>
-                            <option value="Problema no cadastro">Problema no cadastro</option>
-                            <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
-                            <option value="Não utilizável">Não utilizável</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
-                        <button type="button" class="btn" onclick="saveEdit()">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
 
-        <!-- New contract modal -->
-        <div id="newContract" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h3>Novo Contrato</h3>
-                <p>Preencha com as <b>informações do contrato</b> ou <b>apenas com o número</b> no caso de armários
-                    Irregulares ou
-                    Inutilizáveis.</p>
-                <form id="newContractForm">
-                    <div class="input-group">
-                        <label for="newContractNumber">Número do Armário</label>
-                        <input type="text" id="newContractNumber" name="number" required>
+                    <p class="form-section-title">Dados do Proprietário</p>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="editOwnerName">Nome Completo</label>
+                            <input type="text" id="editOwnerName" name="ownerName" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="editOwnerEmail">Email</label>
+                            <input type="email" id="editOwnerEmail" name="ownerEmail" required>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="newContractName">Nome</label>
-                        <input type="text" id="newContractName" name="name" required>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="editOwnerPhone">Telefone</label>
+                            <input type="tel" id="editOwnerPhone" name="ownerPhone" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="editOwnerGRR">GRR</label>
+                            <input type="text" id="editOwnerGRR" name="ownerGRR" required>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="newContractUID">UID</label>
-                        <input type="text" id="newContractUid" name="UID" required
-                            placeholder="UID, número do contrato ou deixe em branco para fazer em seu nome.">
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="editOwnerCourse">Curso</label>
+                            <input type="text" id="editOwnerCourse" name="ownerCourse" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="editContractPayment">Método de Pagamento</label>
+                            <input type="text" id="editContractPayment" name="payment">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="newContractPhone">Telefone</label>
-                        <input type="text" id="newContractPhone" name="phone" required>
+
+                    <div class="divider"></div>
+
+                    <p class="form-section-title">Dados do Contrato</p>
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="editContractDate">Data do Contrato</label>
+                            <input type="date" id="editContractDate" name="date" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="editContractExpiry">Data de Vencimento</label>
+                            <input type="date" id="editContractExpiry" name="expiry">
+                            <small style="color: #6b7280; font-size: 0.75rem;">Deixe vazio para indefinido</small>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label for="newContractEmail">Email</label>
-                        <input type="text" id="newContractEmail" name="email" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newContractCourse">Curso</label>
-                        <input type="text" id="newContractCourse" name="course" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newContractGRR">GRR</label>
-                        <input type="text" id="newContractGRR" name="grr" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newContractDate">Data do Contrato</label>
-                        <input type="text" id="newContractDate" name="date" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newContractPay">Método de pagamento</label>
-                        <input type="text" id="newContractPay" name="pay" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="newContractStatus">Situação</label>
-                        <select id="newContractStatus" name="status" required>
-                            <option value="Aguardando pagamento">Aguardando pagamento</option>
-                            <option value="Regular">Regular</option>
-                            <option value="Irregular">Irregular</option>
-                            <option value="Livre">Livre</option>
-                            <option value="Problema no cadastro">Problema no cadastro</option>
-                            <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
-                            <option value="Não utilizável">Não utilizável</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
-                        <button type="button" class="btn" onclick="preContract(0)">Irregular</button>
-                        <button type="button" class="btn" onclick="preContract(1)">Inutilizável</button>
-                        <button type="button" onclick="saveNew()">Salvar</button>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="editContractStatus">Situação</label>
+                            <select id="editContractStatus" name="status" required>
+                                <option value="Aguardando pagamento">Aguardando pagamento</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Irregular">Irregular</option>
+                                <option value="Livre">Livre</option>
+                                <option value="Problema no cadastro">Problema no cadastro</option>
+                                <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                                <option value="Não utilizável">Não utilizável</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <!-- Empty space for symmetry -->
+                        </div>
                     </div>
                 </form>
             </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="saveEdit()">
+                    <span class="material-symbols-outlined">save</span>
+                    Salvar Alterações
+                </button>
+            </div>
         </div>
+    </div>
+
+    <!-- New Contract Modal -->
+    <div id="newContract" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>
+                    <span class="material-symbols-outlined">add_circle</span>
+                    Novo Contrato
+                </h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-description">
+                    Preencha com as <b>informações do contrato</b> ou <b>apenas com o número</b>
+                    no caso de armários Irregulares ou Inutilizáveis.
+                </p>
+
+                <form id="newContractForm">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="newContractNumber">Número do Armário *</label>
+                            <input type="text" id="newContractNumber" name="number" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="newContractStatus">Situação *</label>
+                            <select id="newContractStatus" name="status" required>
+                                <option value="Aguardando pagamento">Aguardando pagamento</option>
+                                <option value="Regular">Regular</option>
+                                <option value="Irregular">Irregular</option>
+                                <option value="Livre">Livre</option>
+                                <option value="Problema no cadastro">Problema no cadastro</option>
+                                <option value="CAQuí (Reservado)">CAQuí (Reservado)</option>
+                                <option value="Não utilizável">Não utilizável</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+                    <p class="form-section-title">Dados do Proprietário</p>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="newContractName">Nome</label>
+                            <input type="text" id="newContractName" name="name">
+                        </div>
+                        <div class="input-group">
+                            <label for="newContractUid">UID</label>
+                            <input type="text" id="newContractUid" name="UID"
+                                placeholder="Deixe em branco para usar seu ID">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="newContractPhone">Telefone</label>
+                            <input type="text" id="newContractPhone" name="phone">
+                        </div>
+                        <div class="input-group">
+                            <label for="newContractEmail">Email</label>
+                            <input type="text" id="newContractEmail" name="email">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="newContractCourse">Curso</label>
+                            <input type="text" id="newContractCourse" name="course">
+                        </div>
+                        <div class="input-group">
+                            <label for="newContractGRR">GRR</label>
+                            <input type="text" id="newContractGRR" name="grr">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="newContractDate">Data do Contrato *</label>
+                            <input type="text" id="newContractDate" name="date" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="newContractPay">Método de Pagamento</label>
+                            <input type="text" id="newContractPay" name="pay">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="preContract(0)">
+                    <span class="material-symbols-outlined">report</span>
+                    Criar Irregular
+                </button>
+                <button type="button" class="btn btn-muted" onclick="preContract(1)">
+                    <span class="material-symbols-outlined">block</span>
+                    Criar Inutilizável
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveNew()">
+                    <span class="material-symbols-outlined">save</span>
+                    Salvar Completo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Expire Contracts Modal -->
+    <div id="confirmExpireModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>
+                    <span class="material-symbols-outlined">warning</span>
+                    Confirmar Atualização de Vencidos
+                </h3>
+                <span class="close" onclick="closeExpireModal()">&times;</span>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-description">
+                    Esta ação irá <strong>marcar todos os contratos vencidos como "Irregular"</strong>.
+                </p>
+
+                <div
+                    style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px; margin: 16px 0; border-radius: 4px;">
+                    <p style="margin: 0; color: #92400e; font-size: 0.9rem;">
+                        <strong>⚠️ O que acontecerá:</strong>
+                    </p>
+                    <ul style="margin: 8px 0 0 0; padding-left: 20px; color: #92400e; font-size: 0.9rem;">
+                        <li>Todos os contratos com status "Regular" e data de vencimento passada serão atualizados</li>
+                        <li>O status será alterado para "Irregular"</li>
+                        <li>A cor do armário será atualizada para vermelho</li>
+                        <li>Esta ação não pode ser desfeita automaticamente</li>
+                    </ul>
+                </div>
+
+                <p style="margin-top: 16px; font-size: 0.95rem; color: #6b7280;">
+                    Deseja continuar com esta operação?
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeExpireModal()">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="confirmExpireContracts()">
+                    <span class="material-symbols-outlined">update</span>
+                    Confirmar Atualização
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span class="material-symbols-outlined toast-icon"></span>
+        <span class="toast-message"></span>
     </div>
 
     <script defer src="modules/firebaseConfig.js"></script>
