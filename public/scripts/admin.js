@@ -1,336 +1,651 @@
 const db = firebase.firestore();
+const realtimeDb = firebase.database();
 
-// Find user in database
+// ========================================
+// State Management
+// ========================================
 let userId;
+let contracts = [];
+let filteredContracts = [];
+let currentPage = 1;
+let itemsPerPage = 25;
+let currentSort = { column: 'id', direction: 'asc' };
+let isAdmin = false;
+let adminData = null;
 
+// ========================================
+// Authentication & Admin Check
+// ========================================
 firebase.auth().onAuthStateChanged(function (user) {
-  if (user.uid == ("qPjBuIUwEBRXsUYipLGzi4HVOeA2")) {
-
+  if (user) {
     userId = user.uid;
-    
-    let username;
-
-    db.collection("users")
-      .doc(userId)
-      .get()
-      .then((doc) => {
-        username = doc.data().nome;
-      });
+    checkAdminStatus(userId);
   } else {
-    // No user is signed in.
     userId = null;
-    alert("Você não tem permissão para acessar essa página.");
-    window.location.href = "index.html";
+    showToast("Você precisa estar logado para acessar esta página.", "error");
+    setTimeout(() => {
+      window.location.href = "auth.html";
+    }, 2000);
   }
 });
 
-// Load contracts from this user
-let contracts = [];
-
-function loadContracts() {
-  if (contracts.length == 0) {
-    db.collection("armarios")
-      .get()
-      .then((snapshot) => {
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const id = doc.id;
-          const date = new Date(data.date.seconds * 1000);
-          const sit = data.situacao;
-          const color = data.color;
-          const pay = data.payment;
-          let owner;
-
-          // Firebase timestamp to date string (dd/mm/yyyy)
-          const expires =
-            data.expires == undefined
-              ? "..."
-              : data.expires.toDate().toLocaleDateString("pt-BR");
-          const ownerRef = doc.data().dono;
-
-          contracts.push({
-            id: id,
-            sit: sit,
-            owner: owner,
-            ownerRef: ownerRef,
-            date: date.toLocaleDateString("pt-BR"),
-            color: color,
-            pay: pay,
-            expires: expires,
-          });
-
-          owner = doc
-            .data()
-            .dono.get()
-            .then((doc) => {
-              //document.getElementById("ow" + id).innerText = doc.data().nome;
-              contracts.filter((c) => c.id == id)[0].ownerName =
-                doc.data().nome;
-            });
-        });
-
-        // Sort contracts by number
-        contracts.sort((a, b) => {
-          return a.id - b.id;
-        });
-
-        // Set stats values
-        const totalNumber =
-          contracts.length -
-          contracts.filter((c) => c.sit == "Não utilizável").length -
-          contracts.filter((c) => c.sit == "CAQuí (Reservado)").length;
-        document.getElementById("big-number").innerText = totalNumber;
-        document.getElementById("cRegulares").innerText = contracts.filter(
-          (c) => c.sit == "Regular"
-        ).length;
-        document.getElementById("cIrregulares").innerText = contracts.filter(
-          (c) => c.sit == "Irregular"
-        ).length;
-        document.getElementById("cAguaP").innerText = contracts.filter(
-          (c) => c.sit == "Aguardando pagamento"
-        ).length;
-        document.getElementById("cInutilizavel").innerText = contracts.filter(
-          (c) => c.sit == "Não utilizável"
-        ).length;
-
-        document.getElementById("table").style.display = "table";
-      });
-  } else {
-    document.getElementById("table").style.display = "table";
-  }
-}
-
-loadContracts();
-
-function prepareTable() {
-  document.getElementById("popup-table").style.display = "block";
-  const table = document.getElementById("table");
-  table.innerHTML =
-    '<colgroup> <col span="1" style="width: 3%;"> <col span="1" style="width: 15%;"> <col span="1" style="width: 51%;"> <col span="1" style="width: 8%;"> <col span="1" style="width: 8%;"> <col span="1" style="width: 15%;"> </colgroup><tr> <th>Número</th> <th>Situação</th> <th>Proprietário</th> <th>Data do Contrato</th> <th>Vencimento</th> <th>Ações</th> </tr>';
-  table.style.display = "table";
-
-  for (let i = 0; i < contracts.length; i++) {
-    let content = contracts[i];
-    buildTable(content, table);
-  }
-}
-
-function buildTable(content, location) {
-  const row = document.createElement("tr");
-  const id = document.createElement("td");
-  const situation = document.createElement("td");
-  const date = document.createElement("td");
-  const owner = document.createElement("td");
-  const expires = document.createElement("td");
-
-  // Action buttons
-  const edit = document.createElement("button");
-  const deleteBtn = document.createElement("button");
-
-  id.innerText = content.id;
-  situation.innerText = content.sit;
-  situation.style.color = content.color;
-  date.innerText = content.date;
-  owner.id = "ow" + content.id;
-  owner.innerText = content.ownerName
-    ? content.ownerName
-    : "Usuário não encontrado";
-  expires.innerText = content.expires;
-
-  row.id = "row" + content.id;
-  row.appendChild(id);
-  row.appendChild(situation);
-  row.appendChild(owner);
-  row.appendChild(date);
-  row.appendChild(expires);
-
-  edit.innerText = "Editar";
-  edit.className = "btn btn-primary";
-  edit.id = "edit" + content.id;
-  edit.onclick = function () {
-    editContract(content.id);
-  };
-
-  deleteBtn.innerText = "Deletar";
-  deleteBtn.className = "btn btn-danger";
-  deleteBtn.id = "delete" + content.id;
-  deleteBtn.onclick = function () {
-    deleteContract(content.id);
-  };
-
-  row.appendChild(edit);
-  row.appendChild(deleteBtn);
-
-  location.appendChild(row);
-}
-
-// Editing contract
-
-function editContract(id) {
-  const contract = contracts.find((contract) => contract.id === id);
-  const sit = contract.sit;
-  const date = contract.date;
-
-  document.getElementById("editContractStatus").value = sit;
-  document.getElementById("editContractDate").value = date;
-  document.getElementById("infoPay").innerText = contract.pay;
-
-  let owner;
-  try {
-    owner = contract.ownerRef.get().then((doc) => {
-      document.getElementById("infoName").innerText = doc.data().nome;
-      document.getElementById("infoName").innerText = doc.data().nome;
-      document.getElementById("infoPhone").innerText = doc.data().phone;
-      document.getElementById("infoEmail").innerText = doc.data().email;
-      document.getElementById("infoCourse").innerText = doc.data().course;
-      document.getElementById("infoGRR").innerText = "GRR" + doc.data().grr;
+function checkAdminStatus(uid) {
+  // Query the admins collection for this user's UID
+  realtimeDb.ref('admins').orderByChild('UID').equalTo(uid).once('value')
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        // User found in admin collection
+        const adminEntries = snapshot.val();
+        const adminKey = Object.keys(adminEntries)[0];
+        adminData = adminEntries[adminKey];
+        
+        if (adminData.isAdmin === true) {
+          isAdmin = true;
+          console.log('Admin access granted:', adminData.notes || 'No notes');
+          loadContracts();
+        } else {
+          // User exists but isAdmin is false
+          showToast("Acesso negado: você não tem permissão de administrador.", "error");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 2000);
+        }
+      } else {
+        // User not found in admin collection
+        showToast("Acesso negado: você não está na lista de administradores.", "error");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+      }
+    })
+    .catch((error) => {
+      console.error("Error checking admin status:", error);
+      showToast("Erro ao verificar permissões de administrador.", "error");
+      setTimeout(() => {
+        window.location.href = "index.html";
+      }, 2000);
     });
-  } catch (e) {
-    console.log(e);
-    owner = null;
+}
+
+// ========================================
+// Load Contracts
+// ========================================
+function loadContracts() {
+  db.collection("armarios")
+    .get()
+    .then((snapshot) => {
+      contracts = [];
+      const ownerPromises = [];
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+        const date = data.date ? new Date(data.date.seconds * 1000) : null;
+        const expires = data.expires ? data.expires.toDate() : null;
+
+        const contract = {
+          id: id,
+          sit: data.situacao,
+          ownerRef: data.dono,
+          ownerName: "Carregando...",
+          date: date ? date.toLocaleDateString("pt-BR") : "...",
+          dateObj: date,
+          expires: expires ? expires.toLocaleDateString("pt-BR") : "...",
+          expiresObj: expires,
+          color: data.color,
+          pay: data.payment,
+        };
+
+        contracts.push(contract);
+
+        // Load owner name
+        if (data.dono) {
+          const promise = data.dono.get().then((ownerDoc) => {
+            if (ownerDoc.exists) {
+              contract.ownerName = ownerDoc.data().nome || "Sem nome";
+            } else {
+              contract.ownerName = "Usuário não encontrado";
+            }
+          }).catch(() => {
+            contract.ownerName = "Erro ao carregar";
+          });
+          ownerPromises.push(promise);
+        } else {
+          contract.ownerName = "Não informado";
+        }
+      });
+
+      // Wait for all owner names to load
+      Promise.all(ownerPromises).then(() => {
+        // Sort by ID initially
+        contracts.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+        filteredContracts = [...contracts];
+        
+        updateDashboard();
+        renderTable();
+        updatePagination();
+      });
+    })
+    .catch((error) => {
+      console.error("Error loading contracts:", error);
+      showToast("Erro ao carregar contratos", "error");
+    });
+}
+
+// ========================================
+// Dashboard Updates
+// ========================================
+function updateDashboard() {
+  const TOTAL_LOCKERS = 384; // Total number of lockers in the system
+  
+  const regular = contracts.filter(c => c.sit === "Regular").length;
+  const irregular = contracts.filter(c => c.sit === "Irregular").length;
+  const waiting = contracts.filter(c => c.sit === "Aguardando pagamento").length;
+  const unusable = contracts.filter(c => c.sit === "Não utilizável").length;
+  const reserved = contracts.filter(c => c.sit === "CAQuí (Reservado)").length;
+  
+  // Free lockers = total - all registered lockers
+  const registeredLockers = contracts.length;
+  const free = TOTAL_LOCKERS - registeredLockers;
+  
+  // Active contracts = registered contracts - unusable - reserved (CAQuí)
+  const total = registeredLockers - unusable - reserved;
+
+  // Update stat cards
+  document.getElementById("stat-total").textContent = total;
+  document.getElementById("stat-regular").textContent = regular;
+  document.getElementById("stat-irregular").textContent = irregular;
+  document.getElementById("stat-waiting").textContent = waiting;
+  document.getElementById("stat-unusable").textContent = unusable;
+  document.getElementById("stat-free").textContent = free;
+
+  // Update distribution bar with tooltips (based on total 384)
+  const regularPercent = (regular / TOTAL_LOCKERS * 100).toFixed(1);
+  const irregularPercent = (irregular / TOTAL_LOCKERS * 100).toFixed(1);
+  const waitingPercent = (waiting / TOTAL_LOCKERS * 100).toFixed(1);
+  const reservedPercent = (reserved / TOTAL_LOCKERS * 100).toFixed(1);
+  const freePercent = (free / TOTAL_LOCKERS * 100).toFixed(1);
+  const unusablePercent = (unusable / TOTAL_LOCKERS * 100).toFixed(1);
+
+  // Update widths
+  document.getElementById("bar-regular").style.width = regularPercent + "%";
+  document.getElementById("bar-irregular").style.width = irregularPercent + "%";
+  document.getElementById("bar-waiting").style.width = waitingPercent + "%";
+  document.getElementById("bar-reserved").style.width = reservedPercent + "%";
+  document.getElementById("bar-free").style.width = freePercent + "%";
+  document.getElementById("bar-unusable").style.width = unusablePercent + "%";
+
+  // Update tooltip data
+  document.getElementById("bar-regular").setAttribute("data-count", regular);
+  document.getElementById("bar-regular").setAttribute("data-percent", regularPercent + "%");
+  
+  document.getElementById("bar-irregular").setAttribute("data-count", irregular);
+  document.getElementById("bar-irregular").setAttribute("data-percent", irregularPercent + "%");
+  
+  document.getElementById("bar-waiting").setAttribute("data-count", waiting);
+  document.getElementById("bar-waiting").setAttribute("data-percent", waitingPercent + "%");
+  
+  document.getElementById("bar-reserved").setAttribute("data-count", reserved);
+  document.getElementById("bar-reserved").setAttribute("data-percent", reservedPercent + "%");
+  
+  document.getElementById("bar-free").setAttribute("data-count", free);
+  document.getElementById("bar-free").setAttribute("data-percent", freePercent + "%");
+  
+  document.getElementById("bar-unusable").setAttribute("data-count", unusable);
+  document.getElementById("bar-unusable").setAttribute("data-percent", unusablePercent + "%");
+
+  // Check for expiring contracts
+  const today = new Date();
+  const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const expiring = contracts.filter(c => {
+    if (!c.expiresObj) return false;
+    return c.expiresObj >= today && c.expiresObj <= nextWeek && c.sit === "Regular";
+  });
+
+  if (expiring.length > 0) {
+    document.getElementById("expiring-alert").style.display = "flex";
+    document.getElementById("expiring-count").textContent = expiring.length;
+  }
+}
+
+// ========================================
+// Table Rendering
+// ========================================
+function renderTable() {
+  const tbody = document.getElementById("table-body");
+  const start = (currentPage - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  const pageContracts = filteredContracts.slice(start, end);
+
+  if (pageContracts.length === 0) {
+    tbody.innerHTML = `
+      <tr class="empty-row">
+        <td colspan="6">
+          <span class="material-symbols-outlined">inbox</span>
+          Nenhum contrato encontrado
+        </td>
+      </tr>
+    `;
+    document.getElementById("results-count").textContent = "Nenhum resultado";
+    return;
   }
 
-  document.getElementById("contractNumber").innerText = id;
+  tbody.innerHTML = pageContracts.map(contract => `
+    <tr data-id="${contract.id}">
+      <td><strong>${contract.id}</strong></td>
+      <td>${getStatusBadge(contract.sit)}</td>
+      <td>${escapeHtml(contract.ownerName)}</td>
+      <td>${contract.date}</td>
+      <td>${contract.expires}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn-edit" onclick="editContract('${contract.id}')">
+            <span class="material-symbols-outlined" style="font-size:16px">edit</span>
+            Editar
+          </button>
+          <button class="btn-delete" onclick="deleteContract('${contract.id}')">
+            <span class="material-symbols-outlined" style="font-size:16px">delete</span>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  document.getElementById("results-count").textContent = 
+    `Mostrando ${start + 1}-${Math.min(end, filteredContracts.length)} de ${filteredContracts.length} contratos`;
+}
+
+function getStatusBadge(status) {
+  const statusMap = {
+    "Regular": "regular",
+    "Irregular": "irregular",
+    "Aguardando pagamento": "waiting",
+    "Problema no cadastro": "problem",
+    "CAQuí (Reservado)": "reserved",
+    "Não utilizável": "unusable"
+  };
+  const className = statusMap[status] || "default";
+  return `<span class="status-badge ${className}">${escapeHtml(status)}</span>`;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+// ========================================
+// Filtering & Search
+// ========================================
+function searchContracts() {
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchTerm = document.getElementById("search-input").value.toLowerCase();
+  const statusFilter = document.getElementById("filter-status").value;
+  const expiryFilter = document.getElementById("filter-expiry").value;
+
+  filteredContracts = contracts.filter(contract => {
+    // Search filter
+    const matchesSearch = !searchTerm || 
+      contract.id.toLowerCase().includes(searchTerm) ||
+      contract.ownerName.toLowerCase().includes(searchTerm);
+
+    // Status filter
+    const matchesStatus = statusFilter === "all" || contract.sit === statusFilter;
+
+    // Expiry filter
+    let matchesExpiry = true;
+    if (expiryFilter !== "all" && contract.expiresObj) {
+      const today = new Date();
+      const daysUntilExpiry = Math.ceil((contract.expiresObj - today) / (1000 * 60 * 60 * 24));
+      
+      if (expiryFilter === "expired") {
+        matchesExpiry = daysUntilExpiry < 0;
+      } else {
+        matchesExpiry = daysUntilExpiry >= 0 && daysUntilExpiry <= parseInt(expiryFilter);
+      }
+    } else if (expiryFilter !== "all" && !contract.expiresObj) {
+      matchesExpiry = false;
+    }
+
+    return matchesSearch && matchesStatus && matchesExpiry;
+  });
+
+  currentPage = 1;
+  applySorting();
+  renderTable();
+  updatePagination();
+}
+
+function clearFilters() {
+  document.getElementById("search-input").value = "";
+  document.getElementById("filter-status").value = "all";
+  document.getElementById("filter-expiry").value = "all";
+  filteredContracts = [...contracts];
+  currentPage = 1;
+  applySorting();
+  renderTable();
+  updatePagination();
+}
+
+function filterExpiring() {
+  document.getElementById("filter-expiry").value = "7";
+  document.getElementById("filter-status").value = "Regular";
+  applyFilters();
+}
+
+// ========================================
+// Sorting
+// ========================================
+function sortTable(column) {
+  if (currentSort.column === column) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = column;
+    currentSort.direction = 'asc';
+  }
+
+  // Update header icons
+  document.querySelectorAll('#contracts-table th').forEach(th => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+
+  applySorting();
+  renderTable();
+}
+
+function applySorting() {
+  const { column, direction } = currentSort;
+  const multiplier = direction === 'asc' ? 1 : -1;
+
+  filteredContracts.sort((a, b) => {
+    let valueA, valueB;
+
+    switch (column) {
+      case 'id':
+        valueA = parseInt(a.id) || 0;
+        valueB = parseInt(b.id) || 0;
+        break;
+      case 'status':
+        valueA = a.sit || '';
+        valueB = b.sit || '';
+        break;
+      case 'owner':
+        valueA = a.ownerName || '';
+        valueB = b.ownerName || '';
+        break;
+      case 'date':
+        valueA = a.dateObj ? a.dateObj.getTime() : 0;
+        valueB = b.dateObj ? b.dateObj.getTime() : 0;
+        break;
+      case 'expires':
+        valueA = a.expiresObj ? a.expiresObj.getTime() : 0;
+        valueB = b.expiresObj ? b.expiresObj.getTime() : 0;
+        break;
+      default:
+        return 0;
+    }
+
+    if (typeof valueA === 'string') {
+      return valueA.localeCompare(valueB) * multiplier;
+    }
+    return (valueA - valueB) * multiplier;
+  });
+}
+
+// ========================================
+// Pagination
+// ========================================
+function updatePagination() {
+  const totalPages = Math.ceil(filteredContracts.length / itemsPerPage) || 1;
+  
+  document.getElementById("current-page").textContent = currentPage;
+  document.getElementById("total-pages").textContent = totalPages;
+  
+  document.getElementById("prev-page").disabled = currentPage <= 1;
+  document.getElementById("next-page").disabled = currentPage >= totalPages;
+}
+
+function changePage(delta) {
+  const totalPages = Math.ceil(filteredContracts.length / itemsPerPage);
+  const newPage = currentPage + delta;
+  
+  if (newPage >= 1 && newPage <= totalPages) {
+    currentPage = newPage;
+    renderTable();
+    updatePagination();
+  }
+}
+
+function changeItemsPerPage() {
+  itemsPerPage = parseInt(document.getElementById("items-per-page").value);
+  currentPage = 1;
+  renderTable();
+  updatePagination();
+}
+
+// ========================================
+// Contract Actions
+// ========================================
+function editContract(id) {
+  const contract = contracts.find(c => c.id === id);
+  if (!contract) return;
+
+  document.getElementById("contractNumber").textContent = id;
+  document.getElementById("editContractStatus").value = contract.sit;
+  
+  // Convert date from dd/mm/yyyy to yyyy-mm-dd for date input
+  if (contract.dateObj) {
+    const year = contract.dateObj.getFullYear();
+    const month = String(contract.dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(contract.dateObj.getDate()).padStart(2, '0');
+    document.getElementById("editContractDate").value = `${year}-${month}-${day}`;
+  }
+  
+  // Set expiry date
+  if (contract.expiresObj) {
+    const year = contract.expiresObj.getFullYear();
+    const month = String(contract.expiresObj.getMonth() + 1).padStart(2, '0');
+    const day = String(contract.expiresObj.getDate()).padStart(2, '0');
+    document.getElementById("editContractExpiry").value = `${year}-${month}-${day}`;
+  } else {
+    document.getElementById("editContractExpiry").value = "";
+  }
+  
+  document.getElementById("editContractPayment").value = contract.pay || "";
+
+  // Load owner details and populate editable fields
+  if (contract.ownerRef) {
+    contract.ownerRef.get().then((doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById("editOwnerName").value = data.nome || "";
+        document.getElementById("editOwnerEmail").value = data.email || "";
+        document.getElementById("editOwnerPhone").value = data.phone || "";
+        document.getElementById("editOwnerGRR").value = data.grr || "";
+        document.getElementById("editOwnerCourse").value = data.course || "";
+        
+        // Store owner UID for saving
+        document.getElementById("editContractId").value = doc.id;
+      }
+    }).catch(() => {
+      showToast("Erro ao carregar dados do proprietário", "error");
+    });
+  } else {
+    // Clear fields if no owner
+    document.getElementById("editOwnerName").value = "";
+    document.getElementById("editOwnerEmail").value = "";
+    document.getElementById("editOwnerPhone").value = "";
+    document.getElementById("editOwnerGRR").value = "";
+    document.getElementById("editOwnerCourse").value = "";
+    document.getElementById("editContractId").value = id;
+  }
 
   document.getElementById("editContract").style.display = "block";
 }
 
 function deleteContract(id) {
-  // Delte contract from database
-  const conf = confirm("Tem certeza que deseja deletar este contrato?");
+  if (!confirm("Tem certeza que deseja deletar este contrato?")) return;
 
-  if (conf) {
-    db.collection("armarios")
-      .doc(id)
-      .delete()
-      .then(function () {
-        console.log("Document successfully deleted!");
-        alert("Contrato deletado com sucesso!");
-      })
-      .catch(function (error) {
-        console.error("Error removing document: ", error);
-        alert("Erro ao deletar contrato!");
-      });
-
-    // Delete contract from table
-    const row = document.getElementById("row" + id);
-    row.parentNode.removeChild(row);
-  } else {
-    console.log("Cancelado");
-  }
+  db.collection("armarios").doc(id).delete()
+    .then(() => {
+      contracts = contracts.filter(c => c.id !== id);
+      filteredContracts = filteredContracts.filter(c => c.id !== id);
+      updateDashboard();
+      renderTable();
+      updatePagination();
+      showToast("Contrato deletado com sucesso!", "success");
+    })
+    .catch((error) => {
+      console.error("Error deleting:", error);
+      showToast("Erro ao deletar contrato", "error");
+    });
 }
 
 function saveEdit() {
+  const id = document.getElementById("contractNumber").textContent;
   const sit = document.getElementById("editContractStatus").value;
-  let date = document.getElementById("editContractDate").value;
-  const id = document.getElementById("contractNumber").innerText;
-  let color = getColor(sit);
+  const dateValue = document.getElementById("editContractDate").value; // yyyy-mm-dd
+  const expiryValue = document.getElementById("editContractExpiry").value; // yyyy-mm-dd
+  const payment = document.getElementById("editContractPayment").value;
+  const color = getColor(sit);
+  
+  // Get owner data
+  const ownerUid = document.getElementById("editContractId").value;
+  const ownerName = document.getElementById("editOwnerName").value;
+  const ownerEmail = document.getElementById("editOwnerEmail").value;
+  const ownerPhone = document.getElementById("editOwnerPhone").value;
+  const ownerGRR = document.getElementById("editOwnerGRR").value;
+  const ownerCourse = document.getElementById("editOwnerCourse").value;
 
-  if (sit == "Livre") {
-    if (
-      confirm(
-        "Deseja realmente tornar este armário livre? (Será removido da base de dados)"
-      )
-    ) {
-      const docRef = db.collection("armarios").doc(id);
-      docRef
-        .delete()
-        .then(function () {
-          console.log("Document successfully deleted!");
-          alert("Contrato deletado com sucesso!");
-          document.getElementById("editContract").style.display = "none";
-        })
-        .catch(function (error) {
-          console.error("Error removing document: ", error);
+  if (sit === "Livre") {
+    if (confirm("Deseja realmente tornar este armário livre? (Será removido da base de dados)")) {
+      db.collection("armarios").doc(id).delete()
+        .then(() => {
+          contracts = contracts.filter(c => c.id !== id);
+          filteredContracts = filteredContracts.filter(c => c.id !== id);
+          closeModal();
+          updateDashboard();
+          renderTable();
+          updatePagination();
+          showToast("Armário liberado com sucesso!", "success");
         });
     }
     return;
   }
 
-  // Update table
-  const row = document.getElementById("row" + id);
-  row.childNodes[1].innerText = sit;
-  row.childNodes[1].style.color = color;
-  row.childNodes[3].innerText = date;
+  // Parse date from yyyy-mm-dd
+  const dateParts = dateValue.split("-");
+  const date = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
 
-  date = date.split("/");
-  date = new Date(date[2], date[1] - 1, date[0]);
+  // Prepare update object for contract
+  const updateData = {
+    situacao: sit,
+    date: date,
+    color: color,
+  };
 
-  db.collection("armarios")
-    .doc(id)
-    .update({
-      situacao: sit,
-      date: date,
-      color: color,
-    })
-    .then(function () {
-      console.log("Document successfully updated!");
-      alert("Contrato editado com sucesso!");
-      closeModal();
-    })
-    .catch(function (error) {
-      console.error("Error updating document: ", error);
-      alert("Erro ao editar contrato!");
-    });
+  // Add payment if provided
+  if (payment) {
+    updateData.payment = payment;
+  }
+
+  // Add expiry date if provided, or remove it if cleared
+  if (expiryValue) {
+    const expiryParts = expiryValue.split("-");
+    const expiryDate = new Date(expiryParts[0], expiryParts[1] - 1, expiryParts[2]);
+    updateData.expires = firebase.firestore.Timestamp.fromDate(expiryDate);
+  } else {
+    // Remove expires field if date was cleared
+    updateData.expires = firebase.firestore.FieldValue.delete();
+  }
+
+  // Prepare owner data update
+  const ownerData = {
+    nome: ownerName,
+    email: ownerEmail,
+    phone: ownerPhone,
+    grr: ownerGRR,
+    course: ownerCourse,
+    type: ownerCourse, // type is same as course
+  };
+
+  // Update both contract and owner data
+  Promise.all([
+    db.collection("armarios").doc(id).update(updateData),
+    db.collection("users").doc(ownerUid).set(ownerData, { merge: true })
+  ])
+  .then(() => {
+    // Update local state
+    const contract = contracts.find(c => c.id === id);
+    if (contract) {
+      contract.sit = sit;
+      contract.dateObj = date;
+      contract.date = date.toLocaleDateString("pt-BR");
+      contract.color = color;
+      contract.pay = payment;
+      contract.ownerName = ownerName; // Update owner name in local state
+      
+      if (expiryValue) {
+        const expiryParts = expiryValue.split("-");
+        const expiryDate = new Date(expiryParts[0], expiryParts[1] - 1, expiryParts[2]);
+        contract.expiresObj = expiryDate;
+        contract.expires = expiryDate.toLocaleDateString("pt-BR");
+      } else {
+        // Clear expiry date from local state
+        contract.expiresObj = null;
+        contract.expires = "...";
+      }
+    }
+    
+    closeModal();
+    updateDashboard();
+    renderTable();
+    showToast("Contrato e proprietário atualizados com sucesso!", "success");
+  })
+  .catch((error) => {
+    console.error("Error updating:", error);
+    showToast("Erro ao atualizar contrato", "error");
+  });
 }
 
-// Close modal
-function closeModal() {
-  document.getElementById("editContract").style.display = "none";
-  document.getElementById("newContract").style.display = "none";
-}
-
+// ========================================
+// New Contract
+// ========================================
 function newContractModal() {
   document.getElementById("newContract").style.display = "block";
-  document.getElementById("newContractDate").value =
-    new Date().toLocaleDateString();
+  document.getElementById("newContractDate").value = new Date().toLocaleDateString("pt-BR");
+  
+  // Clear form
+  document.getElementById("newContractForm").reset();
+  document.getElementById("newContractDate").value = new Date().toLocaleDateString("pt-BR");
 }
 
 function saveNew() {
-  // Get values from modal
   const number = document.getElementById("newContractNumber").value;
   const name = document.getElementById("newContractName").value;
-  let uid = document.getElementById("newContractUid").value;
+  let uid = document.getElementById("newContractUid").value || userId;
   const phone = document.getElementById("newContractPhone").value;
   const email = document.getElementById("newContractEmail").value;
   const course = document.getElementById("newContractCourse").value;
   const grr = document.getElementById("newContractGRR").value;
-  let date = document.getElementById("newContractDate").value;
+  let dateStr = document.getElementById("newContractDate").value;
   const payment = document.getElementById("newContractPay").value;
   const sit = document.getElementById("newContractStatus").value;
 
-  // Validate fields
-  if (
-    number === "" ||
-    payment === "" ||
-    name === "" ||
-    phone === "" ||
-    email === "" ||
-    course === "" ||
-    grr === "" ||
-    date === "" ||
-    sit === ""
-  ) {
-    alert("Preencha todos os campos!");
+  if (!number || !dateStr) {
+    showToast("Preencha pelo menos o número e a data!", "warning");
     return;
   }
 
-  // Set UID
-  if (uid === "") {
-    uid = userId;
-  }
-
-  // Set date
-  let dateArray = date.split("/");
-  date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
-
-  // Set color
-  let color = getColor(sit);
-
-  // Get owner reference
+  // Parse date
+  const dateParts = dateStr.split("/");
+  const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
+  const color = getColor(sit);
   const ownerRef = db.collection("users").doc(uid);
 
-  // Create contract object
   const contract = {
     number: number,
     situacao: sit,
@@ -340,301 +655,210 @@ function saveNew() {
     payment: payment,
   };
 
-  // Create user object
-  const user = {
-    id: uid,
-    nome: name,
-    phone: phone,
-    email: email,
-    course: course,
-    grr: grr,
-    type: course,
-  };
-
-  // Add contract to database
-
-  db.collection("armarios")
-    .doc(contract.number)
-    .get()
-    .then(function (doc) {
-      if (!doc.exists || doc.data().situacao == "Irregular") {
-        db.collection("armarios")
-          .doc(contract.number)
-          .set(contract)
-          .then(function () {
-            // Show the success message as an alert
-            alert("Contrato criado com sucesso!");
-            // Hide the modal
-            document.getElementById("newContract").style.display = "none";
-          })
-          .catch(function (error) {
-            // Show the error message as an alert
-            alert("Erro ao criar contrato: " + error);
-          });
+  db.collection("armarios").doc(number).get()
+    .then((doc) => {
+      if (!doc.exists || doc.data().situacao === "Irregular") {
+        return db.collection("armarios").doc(number).set(contract);
       } else {
-        // Show the error message as an alert
-        alert("Erro ao criar contrato: Armário já ocupado!");
+        throw new Error("Armário já ocupado!");
       }
+    })
+    .then(() => {
+      // Save user data
+      const user = {
+        id: uid,
+        nome: name,
+        phone: phone,
+        email: email,
+        course: course,
+        grr: grr,
+        type: course,
+      };
+      
+      return db.collection("users").doc(uid).set(user, { merge: true });
+    })
+    .then(() => {
+      closeModal();
+      loadContracts(); // Reload all contracts
+      showToast("Contrato criado com sucesso!", "success");
+    })
+    .catch((error) => {
+      showToast("Erro: " + error.message, "error");
     });
-
-  // Check and add the user to the database only if it doesn't exist
-  db.collection("users")
-    .doc(user.id)
-    .get()
-    .then(function (doc) {
-      if (doc.exists) {
-        // Confirm user update
-        if (confirm("Deseja atualizar os dados desse usuário/armário?")) {
-          db.collection("users")
-            .doc(user.id)
-            .set(user)
-            .then(function () {
-              // Show the success message as an alert
-              alert("Usuário atualizado com sucesso!");
-            })
-            .catch(function (error) {
-              // Show the error message as an alert
-              alert("Erro ao atualizar usuário: " + error);
-            });
-        }
-      } else if (doc.exists == false) {
-        // Add the user to the database
-        db.collection("users")
-          .doc(user.id)
-          .set(user)
-          .then(function () {
-            // Show the success message as an alert
-            alert("Usuário criado com sucesso!");
-          })
-          .catch(function (error) {
-            // Show the error message as an alert
-            alert("Erro ao criar usuário: " + error);
-          });
-      }
-    });
-}
-
-function closeTable() {
-  document.getElementById("popup-table").style.display = "none";
 }
 
 function preContract(mode) {
-  // Get values from modal
   const number = document.getElementById("newContractNumber").value;
-  let date = document.getElementById("newContractDate").value;
+  let dateStr = document.getElementById("newContractDate").value;
 
-  // Validate fields
-  if (number === "") {
-    alert("Preencha o número do armário!");
+  if (!number) {
+    showToast("Preencha o número do armário!", "warning");
     return;
   }
 
-  // Set date
-  let dateArray = date.split("/");
-  date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
-
-  // Get owner reference
+  const dateParts = dateStr.split("/");
+  const date = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
   const ownerRef = db.collection("users").doc(number);
 
-  let contract;
+  const sitMap = { 0: "Irregular", 1: "Não utilizável" };
+  const sit = sitMap[mode];
 
-  switch (mode) {
-    case 0:
-      contract = {
-        number: number,
-        situacao: "Irregular",
-        color: getColor("Irregular"),
-        date: date,
-        dono: ownerRef,
-        payment: "Não utilizado",
-      };
-      break;
-    case 1:
-      contract = {
-        number: number,
-        situacao: "Não utilizável",
-        color: getColor("Não utilizável"),
-        date: date,
-        dono: ownerRef,
-        payment: "Não utilizado",
-      };
-      break;
-  }
-
-  // Add contract to database
-  db.collection("armarios")
-    .doc(contract.number)
-    .set(contract)
-    .then(function () {
-      // Show the success message as an alert
-      alert("Contrato criado com sucesso!");
-      // Hide the modal
-      document.getElementById("newContract").style.display = "none";
-    })
-    .catch(function (error) {
-      // Show the error message as an alert
-      alert("Erro ao criar contrato: " + error);
-    });
-
-  // Set user
-
-  const user = {
-    id: number,
-    nome: "Não informado",
-    phone: "Não informado",
-    email: "Não informado",
-    course: "Não informado",
-    grr: "Não informado",
-    type: "Não informado",
+  const contract = {
+    number: number,
+    situacao: sit,
+    color: getColor(sit),
+    date: date,
+    dono: ownerRef,
+    payment: "Não utilizado",
   };
 
-  db.collection("users")
-    .doc(user.id)
-    .set(user)
-    .then(function () {
-      // Show the success message as an alert
-      alert("Usuário criado com sucesso!");
+  db.collection("armarios").doc(number).set(contract)
+    .then(() => {
+      const user = {
+        id: number,
+        nome: "Não informado",
+        phone: "Não informado",
+        email: "Não informado",
+        course: "Não informado",
+        grr: "Não informado",
+        type: "Não informado",
+      };
+      return db.collection("users").doc(number).set(user);
     })
-    .catch(function (error) {
-      // Show the error message as an alert
-      alert("Erro ao criar usuário: " + error);
+    .then(() => {
+      closeModal();
+      loadContracts();
+      showToast(`Armário ${sit} criado com sucesso!`, "success");
+    })
+    .catch((error) => {
+      showToast("Erro: " + error.message, "error");
     });
 }
 
-function filterContract() {
-  alert("Filtro ainda não implementado!");
+// ========================================
+// Expire Contracts
+// ========================================
+function expireContracts() {
+  // Open the confirmation modal instead of using default confirm
+  document.getElementById("confirmExpireModal").style.display = "block";
+}
+
+function closeExpireModal() {
+  document.getElementById("confirmExpireModal").style.display = "none";
+}
+
+function confirmExpireContracts() {
+  // Close the modal first
+  closeExpireModal();
+  
+  showToast("Atualizando contratos vencidos...", "warning");
+  let updateCount = 0;
+
+  const promises = contracts.map(contract => {
+    if (!contract.expiresObj || contract.sit !== "Regular") return Promise.resolve();
+    
+    const today = new Date();
+    if (contract.expiresObj < today) {
+      updateCount++;
+      return db.collection("armarios").doc(contract.id).update({
+        situacao: "Irregular",
+        color: getColor("Irregular"),
+      });
+    }
+    return Promise.resolve();
+  });
+
+  Promise.all(promises)
+    .then(() => {
+      loadContracts();
+      showToast(`${updateCount} contratos marcados como irregulares!`, "success");
+    })
+    .catch((error) => {
+      showToast("Erro ao atualizar contratos", "error");
+    });
+}
+
+// ========================================
+// Export Data
+// ========================================
+function exportData() {
+  const headers = ["Número", "Status", "Proprietário", "Data", "Vencimento", "Pagamento"];
+  const rows = filteredContracts.map(c => [
+    c.id,
+    c.sit,
+    c.ownerName,
+    c.date,
+    c.expires,
+    c.pay || ""
+  ]);
+
+  let csv = headers.join(",") + "\n";
+  rows.forEach(row => {
+    csv += row.map(cell => `"${cell}"`).join(",") + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `armarios_${new Date().toISOString().split('T')[0]}.csv`;
+  link.click();
+
+  showToast("Dados exportados com sucesso!", "success");
+}
+
+// ========================================
+// Utility Functions
+// ========================================
+function closeModal() {
+  document.getElementById("editContract").style.display = "none";
+  document.getElementById("newContract").style.display = "none";
+  document.getElementById("confirmExpireModal").style.display = "none";
 }
 
 function getColor(sit) {
-  let color = "";
-
-  switch (sit) {
-    case "Aguardando pagamento":
-      color = "blueviolet";
-      break;
-    case "Regular":
-      color = "green";
-      break;
-    case "Irregular":
-      color = "red";
-      break;
-    case "Livre":
-      color = "blue";
-      break;
-    case "Problema no cadastro":
-      color = "blue";
-      break;
-    case "CAQuí (Reservado)":
-      color = "darkorange";
-      break;
-    case "Não utilizável":
-      color = "gray";
-      break;
-    default:
-      color = "black";
-  }
-
-  return color;
+  const colorMap = {
+    "Aguardando pagamento": "blueviolet",
+    "Regular": "green",
+    "Irregular": "red",
+    "Livre": "blue",
+    "Problema no cadastro": "blue",
+    "CAQuí (Reservado)": "darkorange",
+    "Não utilizável": "gray"
+  };
+  return colorMap[sit] || "black";
 }
 
-// Set all regular or waiting payment contracts to a fixed expire date (24/12/2022)
-// This function is only used once to set all contracts to expire in 2022
-// It is not used anymore
+function showToast(message, type = "info") {
+  const toast = document.getElementById("toast");
+  const icon = toast.querySelector(".toast-icon");
+  const msg = toast.querySelector(".toast-message");
 
-// function setAllContractsExpired() {
-//     db.collection("armarios")
-//         .get()
-//         .then(function (querySnapshot) {
-//             querySnapshot.forEach(function (doc) {
-//                 let contract = doc.data();
-//                 let contractNumber = doc.id;
+  const iconMap = {
+    success: "check_circle",
+    error: "error",
+    warning: "warning",
+    info: "info"
+  };
 
-//                 // Get timestamp to save in database
-//                 let date = new Date(2022, 11, 24);
-//                 date = firebase.firestore.Timestamp.fromDate(date);
+  toast.className = `toast show ${type}`;
+  icon.textContent = iconMap[type] || "info";
+  msg.textContent = message;
 
-//                 if (contract.situacao == "Regular" || contract.situacao == "Aguardando pagamento") {
-//                     db.collection("armarios")
-//                         .doc(contractNumber)
-//                         .update({
-//                             expires: date
-//                         })
-//                         .then(function () {
-//                             console.log("Contrato " + contractNumber + " expirado!");
-//                         })
-//                         .catch(function (error) {
-//                             console.error("Erro ao atualizar contrato: ", error);
-//                         });
-//                 }
-//             });
-//         })
-//         .catch(function (error) {
-//             console.log("Erro ao ler contratos: ", error);
-//         });
-// }
-
-// Mark contracts as expired
-function expireContracts() {
-  // Confirm
-  if (
-    !confirm("Tem certeza que deseja marcar todos os contratos como expirados?")
-  ) {
-    return;
-  } else {
-    alert(
-      "Aguarde enquanto os contratos são marcados como expirados...\nUm aviso será exibido quando a operação for concluída."
-    );
-  }
-
-  let error = false;
-
-  db.collection("armarios")
-    .get()
-    .then(function (querySnapshot) {
-      querySnapshot
-        .forEach(function (doc) {
-          let contract = doc.data();
-          let contractNumber = doc.id;
-          // Check if contract has an expiration date
-          let contractDate = contract.expires
-            ? new Date(contract.expires.seconds * 1000)
-            : new Date(3000, 0, 1);
-
-          let today = new Date();
-          let diff = today.getTime() - contractDate.getTime();
-          let days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-
-          if (days > 0 && contract.situacao == "Regular") {
-            db.collection("armarios")
-              .doc(contractNumber)
-              .update({
-                situacao: "Irregular",
-                color: getColor("Irregular"),
-              })
-              .then(function () {
-                console.log(
-                  "Contrato " +
-                    contractNumber +
-                    " expirado! (Diferença de " +
-                    days +
-                    " dias)"
-                );
-              })
-              .catch(function (error) {
-                console.error(
-                  "Erro ao expirar contrato " + contractNumber + ": " + error
-                );
-                error = true;
-              });
-          }
-        })
-        
-        setTimeout(function () {
-          if (error) {
-            alert("Erro ao expirar contratos!");
-          } else {
-            alert("Contratos expirados com sucesso!");
-          }
-        }, 10000);
-    });
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 4000);
 }
+
+// Close modals on outside click
+window.onclick = function(event) {
+  if (event.target.classList.contains('modal')) {
+    closeModal();
+  }
+};
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});

@@ -41,6 +41,9 @@ a {
 
 .section-default {
     padding: 32px 5vw 32px 5vw;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 .section-title-default {
