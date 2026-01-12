@@ -1,0 +1,21 @@
+# robots.txt para Armários DQ
+User-agent: *
+Allow: /index.html
+Allow: /createnew.html
+Allow: /help.html
+Allow: /style.css
+Allow: /index.css
+Allow: /createnew.css
+Allow: /files/
+
+# Bloquear páginas privadas e listas
+Disallow: /admin.html
+Disallow: /perfil.html
+Disallow: /auth.html
+Disallow: /armarios.html
+Disallow: /meuscontratos.css
+Disallow: /scripts/
+Disallow: /modules/
+
+# Sitemap
+Sitemap: https://armariosdq.web.app/sitemap.xml
